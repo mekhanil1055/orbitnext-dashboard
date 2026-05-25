@@ -332,7 +332,7 @@ function cv(val, type, iname, cls) {
   el.textContent = val;
   return el.outerHTML;
 }
-function nv(val, cls){return '<span class="sv'+(cls?" "+cls)+'">'+val+'</span>';}
+function nv(val, cls){return '<span class="sv'+(cls?' '+cls:'')+'">'+val+'</span>';}
 
 function render(payload) {
   var data = payload.initiatives||[], le = payload.lastEdit||"";
