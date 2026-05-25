@@ -326,11 +326,9 @@ function openPanel(type, initName) {
 function closePanel(){document.getElementById("pov").classList.remove("open");}
 
 function cv(val, type, iname, cls) {
-  var el = document.createElement("span");
-  el.className = "sv ck" + (cls?" "+cls:"");
-  el.onclick = (function(t,n){ return function(){ openPanel(t,n); }; })(type, iname);
-  el.textContent = val;
-  return el.outerHTML;
+  var idx = D.findIndex ? D.findIndex(function(x){return x["Initiative"]===iname;}) : -1;
+  if(idx === -1){ for(var i=0;i<D.length;i++){if(D[i]["Initiative"]===iname){idx=i;break;}}}
+  return '<span class="sv ck'+(cls?' '+cls:'')+'" onclick="openPanel(\''+type+'\',D['+idx+'][\'Initiative\'])">'+ val +'</span>';
 }
 function nv(val, cls){return '<span class="sv'+(cls?' '+cls:'')+'">'+val+'</span>';}
 
