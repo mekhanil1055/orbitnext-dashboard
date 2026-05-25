@@ -330,7 +330,11 @@ var _CRidx = 0;
 function cv(val, type, iname, cls) {
   var key = "k" + (_CRidx++);
   _CR[key] = {type: type, iname: iname};
-  return '<span class="sv ck'+(cls?' '+cls:'')+'" onclick="_click(''+key+'')">'+ val +'</span>';
+  var sp = document.createElement("span");
+  sp.className = "sv ck" + (cls?" "+cls:"");
+  sp.setAttribute("id", "cv-"+key);
+  sp.textContent = val;
+  return sp.outerHTML;
 }
 function _click(key) {
   var entry = _CR[key];
@@ -457,6 +461,11 @@ function render(payload) {
     html+='</div></div>';
   });
   document.getElementById("cards").innerHTML=html;
+  // Wire up all clickable spans using the _CR registry
+  Object.keys(_CR).forEach(function(key) {
+    var el = document.getElementById("cv-"+key);
+    if(el) el.onclick = (function(k){ return function(){ _click(k); }; })(key);
+  });
 
   // Wire up rag dot and pill clicks after render
   data.forEach(function(d){
