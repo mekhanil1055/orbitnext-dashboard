@@ -325,15 +325,24 @@ function openPanel(type, initName) {
 }
 function closePanel(){document.getElementById("pov").classList.remove("open");}
 
+var _CR = {};
+var _CRidx = 0;
 function cv(val, type, iname, cls) {
-  var safe = iname.replace(/'/g, "\\'");
-  return '<span class="sv ck'+(cls?' '+cls:'')+'" onclick="openPanel(\''+type+'\',\''+safe+'\')">'+ val +'</span>';
+  var key = "k" + (_CRidx++);
+  _CR[key] = {type: type, iname: iname};
+  return '<span class="sv ck'+(cls?' '+cls:'')+'" onclick="_click(''+key+'')">'+ val +'</span>';
+}
+function _click(key) {
+  var entry = _CR[key];
+  if(entry) openPanel(entry.type, entry.iname);
 }
 function nv(val, cls){return '<span class="sv'+(cls?' '+cls:'')+'">'+val+'</span>';}
 
 function render(payload) {
   var data = payload.initiatives||[], le = payload.lastEdit||"";
   D = data;
+  _CR = {};
+  _CRidx = 0;
   if(!data||!data.length){
     document.getElementById("cards").innerHTML='<div class="loading" style="color:#AB1E23">No data. Run OrbitNext menu from sheet first.</div>';
     return;
