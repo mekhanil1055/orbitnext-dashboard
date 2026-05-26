@@ -499,8 +499,8 @@ function render(payload) {
     var msAllKey = "k" + (_CRidx++);
     _CR[msAllKey] = {type:"ms-all", iname:iname};
     html+='<div class="sec"><div class="sect" id="cv-'+msAllKey+'" style="cursor:pointer;text-decoration:underline dotted">Milestones</div>';
-    html+='<div class="pw"><div class="pl"><span>Completion</span><span>'+msPct+'%</span></div><div class="pb"><div class="pf" style="width:\'msPct'+'%;background:\'+m.dc+'"></div></div></div>';
-    html+='<div class="stats">';
+    html+='<div class="pw"><div class="pl"><span>Completion</span><span>'+msPct+'%</span></div><div class="pb"><div class="pf" style="width:'+msPct+'%;background:'+m.dc+'"></div></div></div>';
+
     html+='<div class="stat"><span class="sl">Done</span>'+cv(msD+" / "+msT,"ms-done",iname,"g")+'</div>';
     html+='<div class="stat"><span class="sl">In progress</span>'+(msI>0?cv(msI,"ms-ip",iname,""):nv(msI,""))+'</div>';
     html+='<div class="stat"><span class="sl">Delayed</span>'+(msDl>0?cv(msDl,"ms-del",iname,"d"):nv(msDl,""))+'</div>';
