@@ -301,6 +301,20 @@ function openPanel(type, initName) {
       var meta="Target: "+m.target+(m.unit?" &middot; "+m.unit:"")+(m.actual!==""&&m.actual!==null&&m.actual!==undefined?" &middot; Actual: "+m.actual:"")+(m.trend?" &middot; Trend: "+m.trend:"")+(m.direction?" &middot; "+m.direction:"");
       body+=prow(m.name,meta,st);
     });}else body=empty("No KPIs found.");
+  } else if(d && type==="kpi-done"){
+    var mx=d["_metrics"]||[],items=mx.filter(function(m){return kpiStatus(m)==="Completed";});
+    title="Completed KPIs";sub=items.length+" completed";init=d["Initiative"];
+    if(items.length){items.forEach(function(m){
+      var meta="Target: "+m.target+(m.unit?" &middot; "+m.unit:"")+(m.actual?" &middot; Actual: "+m.actual:"")+(m.trend?" &middot; Trend: "+m.trend:"");
+      body+=prow(m.name,meta,"Completed");
+    });}else body=empty("No completed KPIs yet.");
+  } else if(d && type==="kpi-ontrack"){
+    var mx=d["_metrics"]||[],items=mx.filter(function(m){return kpiStatus(m)==="On Track";});
+    title="On Track KPIs";sub=items.length+" on track";init=d["Initiative"];
+    if(items.length){items.forEach(function(m){
+      var meta="Target: "+m.target+(m.unit?" &middot; "+m.unit:"")+(m.actual?" &middot; Actual: "+m.actual:"")+(m.trend?" &middot; Trend: "+m.trend:"")+(m.direction?" &middot; "+m.direction:"");
+      body+=prow(m.name,meta,"On Track");
+    });}else body=empty("No KPIs on track.");
   } else if(d && type==="kpi-at"){
     var mx=d["_metrics"]||[],items=mx.filter(function(m){return kpiStatus(m)==="At Risk";});
     title="At Risk KPIs";sub=items.length+" at risk";init=d["Initiative"];
@@ -477,7 +491,9 @@ function render(payload) {
     if(al)html+=al;
     html+='<div class="cbody">';
 
-    html+='<div class="sec"><div class="sect">Milestones</div>';
+    var msAllKey = "k" + (_CRidx++);
+    _CR[msAllKey] = {type:"ms-all", iname:iname};
+    html+='<div class="sec"><div class="sect" id="cv-'+msAllKey+'" style="cursor:pointer;text-decoration:underline dotted">Milestones</div>';
     html+='<div class="pw"><div class="pl"><span>Completion</span><span>'+msPct+'%</span></div><div class="pb"><div class="pf '+pc(msPct)+'" style="width:'+msPct+'%"></div></div></div>';
     html+='<div class="stats">';
     html+='<div class="stat"><span class="sl">Done</span>'+cv(msD+" / "+msT,"ms-done",iname,"g")+'</div>';
@@ -485,7 +501,9 @@ function render(payload) {
     html+='<div class="stat"><span class="sl">Delayed</span>'+(msDl>0?cv(msDl,"ms-del",iname,"d"):nv(msDl,""))+'</div>';
     html+='</div>'+hb("Timeline: "+tlH,tlH)+'</div>';
 
-    html+='<div class="sec"><div class="sect">Key metrics</div>';
+    var kAllKey = "k" + (_CRidx++);
+    _CR[kAllKey] = {type:"kpi-all", iname:iname};
+    html+='<div class="sec"><div class="sect" id="cv-'+kAllKey+'" style="cursor:pointer;text-decoration:underline dotted">Key metrics</div>';
     var mx = d["_metrics"]||[];
     var kCompleted=0, kOnTrack=0, kAtRisk=0, kNotStarted=0;
     mx.forEach(function(m){ var s=kpiStatus(m); if(s==="Completed")kCompleted++; else if(s==="On Track")kOnTrack++; else if(s==="At Risk")kAtRisk++; else kNotStarted++; });
@@ -494,12 +512,14 @@ function render(payload) {
     var kEnteredPct = mCt>0?Math.round((mCt-kNotStarted)/mCt*100):0;
     html+='<div class="pw"><div class="pl"><span>Actuals entered</span><span>'+kEnteredPct+'%</span></div><div class="pb"><div class="pf '+pc(kEnteredPct)+'" style="width:'+kEnteredPct+'%"></div></div></div>';
     html+='<div class="stats">';
-    html+='<div class="stat"><span class="sl">Completed</span>'+cv(kCompleted,"kpi-all",iname,"g")+'</div>';
-    html+='<div class="stat"><span class="sl">On track</span>'+cv(kOnTrack,"kpi-all",iname,"w")+'</div>';
+    html+='<div class="stat"><span class="sl">Completed</span>'+(kCompleted>0?cv(kCompleted,"kpi-done",iname,"g"):nv(0,"g"))+'</div>';
+    html+='<div class="stat"><span class="sl">On track</span>'+(kOnTrack>0?cv(kOnTrack,"kpi-ontrack",iname,"w"):nv(0,""))+'</div>';
     html+='<div class="stat"><span class="sl">At risk</span>'+(kAtRisk>0?cv(kAtRisk,"kpi-at",iname,"d"):nv(0,""))+'</div>';
     html+='</div></div>';
 
-    html+='<div class="sec"><div class="sect">Dependencies</div>';
+    var depAllKey = "k" + (_CRidx++);
+    _CR[depAllKey] = {type:"dep-all", iname:iname};
+    html+='<div class="sec"><div class="sect" id="cv-'+depAllKey+'" style="cursor:pointer;text-decoration:underline dotted">Dependencies</div>';
     html+='<div class="stats">';
     html+='<div class="stat"><span class="sl">Total</span>'+cv(dT,"dep-all",iname,"")+'</div>';
     html+='<div class="stat"><span class="sl">Resolved</span>'+(dR>0?cv(dR,"dep-all",iname,"g"):nv(dR,"g"))+'</div>';
