@@ -125,6 +125,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .pnst.Completed{background:var(--grbg);color:var(--grtext)}
 .pnst.In-Progress{background:#E3F2FD;color:#0D47A1}
 .pnst.Not-Started{background:#F5F5F5;color:var(--gray3)}
+.pnst.On-Track{background:#FFF8E1;color:#7A3B00}
+.pnst.At-Risk{background:var(--rbg);color:var(--rtext)}
 .pnst.Pending{background:var(--abg);color:var(--atext)}
 .pnst.Blocked{background:var(--rbg);color:var(--rtext)}
 .pnst.Resolved{background:var(--grbg);color:var(--grtext)}
@@ -294,11 +296,22 @@ function openPanel(type, initName) {
   } else if(d && type==="kpi-all"){
     var mx=d["_metrics"]||[];
     title="All KPIs";sub=mx.length+" KPIs";init=d["Initiative"];
-    if(mx.length){mx.forEach(function(m){var ha=m.actual!==""&&m.actual!==null&&m.actual!==undefined;body+=prow(m.name,"Target: "+m.target+(m.unit?" &middot; "+m.unit:"")+(ha?" &middot; Actual: "+m.actual:""),ha?"Completed":"Pending");});}else body=empty("No KPIs found.");
+    if(mx.length){mx.forEach(function(m){
+      var st=kpiStatus(m);
+      var meta="Target: "+m.target+(m.unit?" &middot; "+m.unit:"")+(m.actual!==""&&m.actual!==null&&m.actual!==undefined?" &middot; Actual: "+m.actual:"")+(m.trend?" &middot; Trend: "+m.trend:"")+(m.direction?" &middot; "+m.direction:"");
+      body+=prow(m.name,meta,st);
+    });}else body=empty("No KPIs found.");
+  } else if(d && type==="kpi-at"){
+    var mx=d["_metrics"]||[],items=mx.filter(function(m){return kpiStatus(m)==="At Risk";});
+    title="At Risk KPIs";sub=items.length+" at risk";init=d["Initiative"];
+    if(items.length){items.forEach(function(m){
+      var meta="Target: "+m.target+(m.unit?" &middot; "+m.unit:"")+(m.actual!==""&&m.actual!==null?" &middot; Actual: "+m.actual:"")+" &middot; Trend: "+(m.trend||"none")+" &middot; "+(m.direction||"");
+      body+=prow(m.name,meta,"At Risk");
+    });}else body=empty("No KPIs at risk.");
   } else if(d && type==="kpi-mis"){
-    var mx=d["_metrics"]||[],items=mx.filter(function(m){return m.actual===""||m.actual===null||m.actual===undefined;});
-    title="KPIs missing actuals";sub=items.length+" missing";init=d["Initiative"];
-    if(items.length){items.forEach(function(m){body+=prow(m.name,"Target: "+m.target+(m.unit?" &middot; "+m.unit:""),"Pending");});}else body=empty("All KPIs have actuals.");
+    var mx=d["_metrics"]||[],items=mx.filter(function(m){return kpiStatus(m)==="Not Started";});
+    title="KPIs not started";sub=items.length+" not started";init=d["Initiative"];
+    if(items.length){items.forEach(function(m){body+=prow(m.name,"Target: "+m.target+(m.unit?" &middot; "+m.unit:""),"Not Started");});}else body=empty("All KPIs have actuals.");
   } else if(d && type==="dep-all"){
     var dx=d["_deps"]||[];
     title="All dependencies";sub=dx.length+" dependencies";init=d["Initiative"];
@@ -341,6 +354,47 @@ function _click(key) {
   if(entry) openPanel(entry.type, entry.iname);
 }
 function nv(val, cls){return '<span class="sv'+(cls?' '+cls:'')+'">'+val+'</span>';}
+
+function kpiStatus(m) {
+  // No actual entered
+  var actual = m.actual;
+  if (actual === "" || actual === null || actual === undefined) return "Not Started";
+
+  var trend  = (m.trend  || "").trim();
+  var dir    = (m.direction || m.notes || "").toLowerCase();
+  var higherBetter = dir.indexOf("higher") !== -1;
+  var lowerBetter  = dir.indexOf("lower")  !== -1;
+
+  // Try numeric comparison
+  var aNum = parseFloat(String(actual).replace(/[^0-9.\-]/g,""));
+  var tNum = parseFloat(String(m.target).replace(/[^0-9.\-]/g,""));
+  var canCompare = !isNaN(aNum) && !isNaN(tNum);
+
+  if (canCompare) {
+    if (higherBetter) {
+      if (aNum >= tNum)                          return "Completed";
+      if (trend === "↓")                         return "At Risk";
+      return "On Track"; // trend ↑ or → or missing
+    }
+    if (lowerBetter) {
+      if (aNum <= tNum)                          return "Completed";
+      if (trend === "↑")                         return "At Risk";
+      return "On Track"; // trend ↓ or → or missing
+    }
+  }
+
+  // Text target — use trend only
+  if (trend === "↓") return "At Risk";
+  if (trend === "")  return "Not Started";
+  return "On Track";
+}
+
+function kpiStatusColor(status) {
+  if (status === "Completed") return "#2E7D32";
+  if (status === "On Track")  return "#E65100";
+  if (status === "At Risk")   return "#AB1E23";
+  return "#9b9fad";
+}
 
 function render(payload) {
   var data = payload.initiatives||[], le = payload.lastEdit||"";
@@ -434,11 +488,16 @@ function render(payload) {
     html+='</div>'+hb("Timeline: "+tlH,tlH)+'</div>';
 
     html+='<div class="sec"><div class="sect">Key metrics</div>';
-    html+='<div class="pw"><div class="pl"><span>Actuals populated</span><span>'+mCv+'%</span></div><div class="pb"><div class="pf '+pc(mCv)+'" style="width:'+mCv+'%"></div></div></div>';
+    var mx = d["_metrics"]||[];
+    var kCompleted=0, kOnTrack=0, kAtRisk=0, kNotStarted=0;
+    mx.forEach(function(m){ var s=kpiStatus(m); if(s==="Completed")kCompleted++; else if(s==="On Track")kOnTrack++; else if(s==="At Risk")kAtRisk++; else kNotStarted++; });
+    var kGood = kCompleted + kOnTrack;
+    var kCovPct = mCt>0?Math.round(kGood/mCt*100):0;
+    html+='<div class="pw"><div class="pl"><span>On track or completed</span><span>'+kCovPct+'%</span></div><div class="pb"><div class="pf '+pc(kCovPct)+'" style="width:'+kCovPct+'%"></div></div></div>';
     html+='<div class="stats">';
-    html+='<div class="stat"><span class="sl">KPIs tracked</span>'+cv(mCt,"kpi-all",iname,"")+'</div>';
-    html+='<div class="stat"><span class="sl">With actuals</span>'+(mAc>0?cv(mAc,"kpi-all",iname,""):nv(mAc,"w"))+'</div>';
-    html+='<div class="stat"><span class="sl">Missing</span>'+((mCt-mAc)>0?cv(mCt-mAc,"kpi-mis",iname,"w"):nv(0,""))+'</div>';
+    html+='<div class="stat"><span class="sl">Completed</span>'+cv(kCompleted,"kpi-all",iname,"g")+'</div>';
+    html+='<div class="stat"><span class="sl">On track</span>'+cv(kOnTrack,"kpi-all",iname,"w")+'</div>';
+    html+='<div class="stat"><span class="sl">At risk</span>'+(kAtRisk>0?cv(kAtRisk,"kpi-at",iname,"d"):nv(0,""))+'</div>';
     html+='</div></div>';
 
     html+='<div class="sec"><div class="sect">Dependencies</div>';
