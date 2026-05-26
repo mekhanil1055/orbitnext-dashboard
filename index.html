@@ -356,7 +356,6 @@ function _click(key) {
 function nv(val, cls){return '<span class="sv'+(cls?' '+cls:'')+'">'+val+'</span>';}
 
 function kpiStatus(m) {
-  // No actual entered
   var actual = m.actual;
   if (actual === "" || actual === null || actual === undefined) return "Not Started";
 
@@ -365,28 +364,27 @@ function kpiStatus(m) {
   var higherBetter = dir.indexOf("higher") !== -1;
   var lowerBetter  = dir.indexOf("lower")  !== -1;
 
-  // Try numeric comparison
   var aNum = parseFloat(String(actual).replace(/[^0-9.\-]/g,""));
   var tNum = parseFloat(String(m.target).replace(/[^0-9.\-]/g,""));
   var canCompare = !isNaN(aNum) && !isNaN(tNum);
 
   if (canCompare) {
     if (higherBetter) {
-      if (aNum >= tNum)                          return "Completed";
-      if (trend === "↓")                         return "At Risk";
-      return "On Track"; // trend ↑ or → or missing
+      if (aNum >= tNum)      return "Completed";
+      if (trend === "↑")     return "On Track";
+      return "At Risk";      // → or ↓ or missing — not improving
     }
     if (lowerBetter) {
-      if (aNum <= tNum)                          return "Completed";
-      if (trend === "↑")                         return "At Risk";
-      return "On Track"; // trend ↓ or → or missing
+      if (aNum <= tNum)      return "Completed";
+      if (trend === "↓")     return "On Track";
+      return "At Risk";      // → or ↑ or missing — not improving
     }
   }
 
-  // Text target — use trend only
-  if (trend === "↓") return "At Risk";
+  // Text target — trend only
+  if (trend === "↑") return "On Track";
   if (trend === "")  return "Not Started";
-  return "On Track";
+  return "At Risk";          // → or ↓
 }
 
 function kpiStatusColor(status) {
@@ -493,7 +491,8 @@ function render(payload) {
     mx.forEach(function(m){ var s=kpiStatus(m); if(s==="Completed")kCompleted++; else if(s==="On Track")kOnTrack++; else if(s==="At Risk")kAtRisk++; else kNotStarted++; });
     var kGood = kCompleted + kOnTrack;
     var kCovPct = mCt>0?Math.round(kGood/mCt*100):0;
-    html+='<div class="pw"><div class="pl"><span>On track or completed</span><span>'+kCovPct+'%</span></div><div class="pb"><div class="pf '+pc(kCovPct)+'" style="width:'+kCovPct+'%"></div></div></div>';
+    var kEnteredPct = mCt>0?Math.round((mCt-kNotStarted)/mCt*100):0;
+    html+='<div class="pw"><div class="pl"><span>Actuals entered</span><span>'+kEnteredPct+'%</span></div><div class="pb"><div class="pf '+pc(kEnteredPct)+'" style="width:'+kEnteredPct+'%"></div></div></div>';
     html+='<div class="stats">';
     html+='<div class="stat"><span class="sl">Completed</span>'+cv(kCompleted,"kpi-all",iname,"g")+'</div>';
     html+='<div class="stat"><span class="sl">On track</span>'+cv(kOnTrack,"kpi-all",iname,"w")+'</div>';
