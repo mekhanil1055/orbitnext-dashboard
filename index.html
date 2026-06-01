@@ -335,7 +335,12 @@ var D = [];
 var _CR = {}, _CRi = 0;
 
 var PROGRAM_START = new Date("2026-05-01");
-var TRACK_WEEKS = {"SaaSw (Service as a Softare)":26,"SaaSw (Service as a Software)":26,"AI-Native Organization":52,"GTM – HHS & Construction":26,"Nearshore / Onshore & Satellite Offices":26};
+var TRACK_WEEKS = {
+  "I1 - SaaSw": 26, "I2 - AI Native": 52, "I3 - GTM": 26, "I4 - Nearshore": 26,
+  "SaaSw (Service as a Softare)":26,"SaaSw (Service as a Software)":26,
+  "AI-Native Organization":52,"GTM – HHS & Construction":26,
+  "GTM - HHS & Construction":26,"Nearshore / Onshore & Satellite Offices":26
+};
 
 var SM = {
   "On Track":    {cls:"on-track",  pill:"pill-on-track", dot:"#2E7D32",  lbl:"On Track"},
@@ -564,14 +569,14 @@ function trendArrow(trend){
   return '<span class="trend-stable"><i class="ti ti-minus"></i> Stable</span>';
 }
 
-function scoreRing(score,color){
+function scoreRing(score,color,iid){
   var r=28,circ=2*Math.PI*r,dash=circ*(score/100),gap=circ-dash;
-  return '<div class="score-ring">' +
+  return '<div class="score-ring" id="cv-ring-'+iid+'" style="cursor:pointer" title="Click for score breakdown">' +
     '<svg width="64" height="64" viewBox="0 0 64 64">' +
     '<circle cx="32" cy="32" r="'+r+'" fill="none" stroke="#EEF0F2" stroke-width="5"/>' +
     '<circle cx="32" cy="32" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="5" stroke-dasharray="'+dash+' '+gap+'" stroke-linecap="round"/>' +
     '</svg>' +
-    '<div class="score-ring-val"><div class="score-num">'+score+'%</div><div class="score-label">Score</div></div>' +
+    '<div class="score-ring-val"><div class="score-num">'+score+'%</div><div class="score-label" style="text-decoration:underline dotted">Score</div></div>' +
     '</div>';
 }
 
@@ -699,7 +704,7 @@ function render(payload){
     html+='<div class="card-top-right">';
     html+='<div class="score-ring-wrap">';
     html+=sparkline(history,status);
-    html+=scoreRing(score,ringColor);
+    html+=scoreRing(score,ringColor,iid);
     html+='</div>';
     html+='<div class="card-pills">';
     html+='<span class="status-pill '+m.pill+'" data-rs="'+status+'" onclick="showRag(this.getAttribute(String.fromCharCode(100,97,116,97,45,114,115)))">'+m.lbl+'</span>';
@@ -821,13 +826,15 @@ function render(payload){
     var el=document.getElementById("cv-"+key);
     if(el) el.onclick=(function(k){return function(){var e=_CR[k];openPanel(e.type,e.iname);};})(key);
   });
-  // Wire up spark/history clicks on overview rows and card pills
+  // Wire up spark/history clicks on overview rows, card pills and score ring
   data.forEach(function(d){
     var iid=d["Initiative"].replace(/[^a-zA-Z0-9]/g,"_");
     var el=document.getElementById("cv-spark-"+iid);
     if(el) el.onclick=(function(id){return function(e){e.stopPropagation();_showHistory(id);};})(iid);
     var el2=document.getElementById("cv-spark2-"+iid);
     if(el2) el2.onclick=(function(id){return function(){_showHistory(id);};})(iid);
+    var el3=document.getElementById("cv-ring-"+iid);
+    if(el3) el3.onclick=(function(id){return function(){_showScoreBreakdown(id);};})(iid);
   });
 }
 
@@ -836,6 +843,104 @@ function scrollTo(iid){
   if(el)el.scrollIntoView({behavior:"smooth",block:"start"});
 }
 
+
+function _showScoreBreakdown(iid){
+  var d=null;
+  for(var i=0;i<D.length;i++){
+    if(D[i]["Initiative"].replace(/[^a-zA-Z0-9]/g,"_")===iid){d=D[i];break;}
+  }
+  if(!d) return;
+
+  var overall=d["Overall Score"]||0;
+  var status=d["Overall Status"]||"";
+  var m=sm(status);
+  var color=progColor(overall);
+
+  var dims=[
+    {lbl:"Milestones",   key:"MilestoneScore",   weight:35, color:"#1565C0", icon:"ti-flag-2"},
+    {lbl:"Deliverables", key:"DeliverableScore",  weight:20, color:"#1B5E20", icon:"ti-package"},
+    {lbl:"Budget",       key:"BudgetScore",       weight:15, color:"#1E5631", icon:"ti-currency-dollar"},
+    {lbl:"Metrics",      key:"MetricsScore",      weight:15, color:"#1A5276", icon:"ti-chart-line"},
+    {lbl:"Dependencies", key:"DependencyScore",   weight:15, color:"#4A235A", icon:"ti-link"}
+  ];
+
+  var body="";
+
+  // Overall score ring summary
+  body+='<div style="display:flex;align-items:center;gap:20px;padding:16px;background:#f7f8fa;border-radius:12px;margin-bottom:20px">';
+  body+='<div style="position:relative;width:80px;height:80px;flex-shrink:0">';
+  var r2=34,circ2=2*Math.PI*r2,dash2=circ2*(overall/100),gap2=circ2-dash2;
+  body+='<svg width="80" height="80" viewBox="0 0 80 80" style="transform:rotate(-90deg)">';
+  body+='<circle cx="40" cy="40" r="'+r2+'" fill="none" stroke="#EEF0F2" stroke-width="6"/>';
+  body+='<circle cx="40" cy="40" r="'+r2+'" fill="none" stroke="'+color+'" stroke-width="6" stroke-dasharray="'+dash2+' '+gap2+'" stroke-linecap="round"/>';
+  body+='</svg>';
+  body+='<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">';
+  body+='<div style="font-size:20px;font-weight:700;color:var(--navy);font-family:monospace">'+overall+'%</div>';
+  body+='</div></div>';
+  body+='<div>';
+  body+='<div style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px">'+d["Initiative"]+'</div>';
+  body+='<span class="status-pill '+m.pill+'">'+m.lbl+'</span>';
+  body+='<div style="font-size:11px;color:var(--muted);margin-top:6px">Weighted score across 5 dimensions</div>';
+  body+='</div></div>';
+
+  // How it's calculated note
+  body+='<div style="font-size:11px;color:var(--muted);background:#f0f4ff;border-radius:8px;padding:8px 12px;margin-bottom:16px">';
+  body+='Overall = (MS×35%) + (DEL×20%) + (BUD×15%) + (MET×15%) + (DEP×15%)';
+  body+='</div>';
+
+  // Dimension bars
+  var computed=0;
+  dims.forEach(function(dim){
+    var score=d[dim.key]||0;
+    var contrib=Math.round(score*dim.weight/100*10)/10;
+    computed+=contrib;
+
+    body+='<div style="margin-bottom:14px">';
+    body+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">';
+    body+='<div style="display:flex;align-items:center;gap:6px">';
+    body+='<i class="ti '+dim.icon+'" style="color:'+dim.color+';font-size:13px"></i>';
+    body+='<span style="font-size:13px;font-weight:600;color:var(--navy)">'+dim.lbl+'</span>';
+    body+='<span style="font-size:10px;color:var(--muted);background:#EEF0F2;padding:1px 6px;border-radius:4px">'+dim.weight+'% weight</span>';
+    body+='</div>';
+    body+='<div style="text-align:right">';
+    body+='<span style="font-size:14px;font-weight:700;color:'+progColor(score)+';font-family:monospace">'+score+'%</span>';
+    body+='<span style="font-size:10px;color:var(--muted);margin-left:6px">→ '+contrib+' pts</span>';
+    body+='</div></div>';
+    body+='<div style="height:8px;background:#EEF0F2;border-radius:99px;overflow:hidden">';
+    body+='<div style="height:100%;width:'+score+'%;background:'+progColor(score)+';border-radius:99px;transition:width .5s ease"></div>';
+    body+='</div></div>';
+  });
+
+  // Total
+  body+='<div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px;display:flex;justify-content:space-between;align-items:center">';
+  body+='<span style="font-size:13px;font-weight:700;color:var(--navy)">Overall score</span>';
+  body+='<span style="font-size:18px;font-weight:700;color:'+color+';font-family:monospace">'+overall+'%</span>';
+  body+='</div>';
+
+  // Hard overrides check
+  var overrides=[];
+  var ms=d["Milestones Total"]>0?(d["Milestones Delayed"]/d["Milestones Total"]):0;
+  var dl=d["Deliverables Total"]>0?(d["Deliverables Delayed"]/d["Deliverables Total"]):0;
+  if(ms>0.30) overrides.push("30%+ milestones delayed → minimum At Risk");
+  if(dl>0.30) overrides.push("30%+ deliverables delayed → minimum At Risk");
+  if(d["Deps Blocked"]>0&&d["Deps High Pending"]>0) overrides.push("High priority dep blocked → minimum Needs Attention");
+  if(d["Variance Pct"]>15) overrides.push("Budget variance >15% → minimum Needs Attention");
+
+  if(overrides.length){
+    body+='<div style="margin-top:14px;background:#FFF3E0;border-radius:8px;padding:10px 14px;border-left:3px solid #FB8C00">';
+    body+='<div style="font-size:10px;font-weight:700;color:#BF5000;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Hard overrides applied</div>';
+    overrides.forEach(function(o){
+      body+='<div style="font-size:11px;color:#7A3B00;margin-bottom:3px">⚠ '+o+'</div>';
+    });
+    body+='</div>';
+  }
+
+  document.getElementById("pan-init").textContent=d["Initiative"];
+  document.getElementById("pan-title").textContent="Score breakdown";
+  document.getElementById("pan-sub").textContent="How your overall score is calculated";
+  document.getElementById("pan-body").innerHTML=body;
+  document.getElementById("pov").classList.add("open");
+}
 
 function loadData(){
   document.getElementById("ts").textContent="Refreshing...";
