@@ -9,861 +9,752 @@
 <style>
 :root{
   --red:#AB1E23;--red2:#7A1518;--navy:#2B2D42;
-  --on-track:#2E7D32;--on-track-bg:#E8F5E9;--on-track-border:#A5D6A7;
-  --minor:#7A6000;--minor-bg:#FFFDE7;--minor-border:#F9A825;
-  --needs:#BF5000;--needs-bg:#FFF3E0;--needs-border:#FB8C00;
-  --at-risk:#C62828;--at-risk-bg:#FFEBEE;--at-risk-border:#EF9A9A;
-  --off-track:#4A0000;--off-track-bg:#FCE4E4;--off-track-border:#B71C1C;
-  --bg:#F0F2F5;--card:#FFFFFF;--border:#E2E6EA;--text:#1A1D2E;--muted:#6B7280;
-  --ms-color:#1565C0;--del-color:#1B5E20;--dep-color:#4A235A;--met-color:#1A5276;--bud-color:#1E5631;
+  --bg:#F0F2F5;--card:#fff;--border:#E2E6EA;--text:#1A1D2E;--muted:#6B7280;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
-.hdr{background:#fff;border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.hdr-logo img{height:48px;width:auto}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;min-height:100vh}
+
+.hdr{background:#fff;border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:68px;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.hdr-logos{display:flex;align-items:center;gap:16px}
+.hdr-logos img{height:40px;width:auto}
+.hdr-divider{width:1px;height:28px;background:var(--border)}
 .hdr-center{text-align:center}
-.hdr-title{font-size:13px;font-weight:600;color:var(--navy);letter-spacing:.02em}
-.hdr-tag{font-size:11px;color:var(--muted);margin-top:1px;font-style:italic}
-.hdr-right{display:flex;align-items:center;gap:14px}
-.ts-wrap{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);background:#f7f8fa;padding:6px 12px;border-radius:8px;border:1px solid var(--border)}
-.ts-wrap i{color:var(--red);font-size:13px}
-.rbtn{background:var(--red);color:#fff;border:none;padding:8px 18px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.02em;transition:background .15s}
+.hdr-title{font-size:14px;font-weight:700;color:var(--navy);letter-spacing:.02em}
+.hdr-tag{font-size:12px;color:var(--muted);margin-top:1px;font-style:italic}
+.hdr-right{display:flex;align-items:center;gap:12px}
+.ts-wrap{font-size:12px;color:var(--muted);background:#f7f8fa;padding:6px 12px;border-radius:8px;border:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.rbtn{background:var(--red);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px}
 .rbtn:hover{background:var(--red2)}
-.main{padding:24px 32px;max-width:1440px;margin:0 auto}
-.ov-card{background:#fff;border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:24px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-.ov-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#1A1D2E 0%,#2B2D42 100%)}
-.ov-hdr-left{display:flex;align-items:center;gap:10px}
-.ov-hdr-left i{color:rgba(255,255,255,.5);font-size:16px}
-.ov-title{font-size:12px;font-weight:600;color:rgba(255,255,255,.9);text-transform:uppercase;letter-spacing:.08em}
-.ov-prog-label{font-size:11px;color:rgba(255,255,255,.5)}
-.irow{display:grid;grid-template-columns:220px 1fr auto;align-items:center;gap:20px;padding:14px 24px;border-bottom:1px solid #f5f6f8;cursor:pointer;transition:background .15s}
-.irow:last-of-type{border-bottom:none}
-.irow:hover{background:#fafbfc}
-.irow-left{display:flex;align-items:center;gap:10px}
-.irow-indicator{width:3px;height:36px;border-radius:99px;flex-shrink:0}
-.irow-name{font-size:13px;font-weight:600;color:var(--navy)}
-.irow:hover .irow-name{color:var(--red)}
-.irow-week{font-size:10px;color:var(--muted);margin-top:2px;font-family:monospace}
-.irow-mid{display:flex;flex-direction:column;gap:6px}
-.irow-bar-wrap{display:flex;align-items:center;gap:10px}
-.irow-bar{flex:1;height:6px;background:#EEF0F2;border-radius:99px;overflow:hidden}
-.irow-bar-fill{height:100%;border-radius:99px;transition:width .6s ease}
-.irow-pct{font-size:12px;font-weight:600;color:var(--navy);min-width:36px;text-align:right;font-family:monospace}
-.irow-meta{font-size:11px;color:var(--muted);display:flex;gap:12px}
-.irow-meta span{display:flex;align-items:center;gap:4px}
-.irow-meta i{font-size:11px}
-.bad-count{color:var(--red);font-weight:600}
-.irow-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
-.status-pill{font-size:11px;font-weight:700;padding:5px 14px;border-radius:99px;border:1px solid;white-space:nowrap;cursor:pointer;letter-spacing:.02em}
-.trend-tag{font-size:10px;display:flex;align-items:center;gap:4px;color:var(--muted)}
-.trend-up{color:#2E7D32;display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600}
-.trend-down{color:#C62828;display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600}
-.trend-stable{color:var(--muted);display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600}
-.mstrip{display:grid;grid-template-columns:repeat(3,1fr);background:#f7f8fa;border-top:1px solid var(--border)}
-.mcell{padding:14px 24px;border-right:1px solid var(--border)}
-.mcell:last-child{border:none}
-.mlbl{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
-.mval{font-size:24px;font-weight:700;color:var(--navy);font-family:monospace}
-.msub{font-size:11px;color:var(--muted);margin-top:2px}
-.msub .bad{color:var(--red);font-weight:600}
-.msub .good{color:#2E7D32;font-weight:600}
-.cards{display:flex;flex-direction:column;gap:20px}
-.icard{background:#fff;border-radius:16px;border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.04);transition:box-shadow .2s}
-.icard:hover{box-shadow:0 4px 16px rgba(0,0,0,.08)}
-.card-accent{height:4px;width:100%}
-.card-top{display:flex;align-items:flex-start;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid var(--border)}
-.card-top-left{flex:1}
-.card-title{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:4px}
-.card-meta{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.card-meta-item{display:flex;align-items:center;gap:4px}
-.card-meta-item i{font-size:12px;color:var(--muted)}
-.card-top-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;padding-left:20px}
-.score-ring-wrap{display:flex;align-items:center;gap:12px}
-.score-ring{position:relative;width:64px;height:64px;flex-shrink:0}
+
+.main{padding:28px 32px;max-width:1280px;margin:0 auto}
+
+/* LEGEND */
+.legend-card{background:#fff;border-radius:14px;border:1px solid var(--border);padding:18px 24px;margin-bottom:20px;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+.legend-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.legend-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+.legend-block-title{font-size:11px;font-weight:700;color:var(--navy);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em}
+.legend-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px}
+.legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.legend-label{color:var(--navy);font-weight:500;min-width:120px}
+.legend-range{color:var(--muted);font-family:'DM Mono',monospace;font-size:12px}
+.legend-explain{font-size:12px;color:var(--muted);line-height:1.6;background:#f7f8fa;border-radius:8px;padding:10px 12px}
+
+/* TOP STRIP */
+.top-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
+.strip-cell{background:#fff;border-radius:14px;border:1px solid var(--border);padding:18px 22px;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+.strip-cell.clickable{cursor:pointer;transition:box-shadow .15s}
+.strip-cell.clickable:hover{box-shadow:0 4px 14px rgba(0,0,0,.1)}
+.strip-lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.strip-val{font-size:30px;font-weight:700;font-family:'DM Mono',monospace}
+.strip-sub{font-size:12px;color:var(--muted);margin-top:3px}
+.s-pill{display:inline-block;font-size:12px;font-weight:700;padding:5px 14px;border-radius:99px;border:1px solid;letter-spacing:.02em}
+
+/* SECTION CARDS */
+.sec-card{background:#fff;border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-bottom:1px solid var(--border)}
+.sec-hdr-l{display:flex;align-items:center;gap:8px}
+.sec-hdr-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.sec-hdr-badge{font-size:12px;opacity:.7}
+.sec-body{padding:22px 24px}
+
+/* TREND GRID */
+.trend-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.trend-track{background:#fafbfc;border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.trend-track-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.trend-track-name{font-size:13px;font-weight:700;color:var(--navy)}
+.trend-bars-wrap{display:flex;align-items:flex-end;gap:8px;height:80px}
+.t-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;justify-content:flex-end}
+.t-bar{width:100%;border-radius:4px 4px 0 0;min-height:4px;transition:opacity .15s;cursor:default}
+.t-bar-val{font-size:10px;font-family:'DM Mono',monospace;font-weight:600}
+.t-bar-lbl{font-size:9px;color:var(--muted);font-family:'DM Mono',monospace}
+.no-trend{font-size:12px;color:var(--muted);font-style:italic;padding:20px 0;text-align:center}
+
+/* DELAYED */
+.del-group{margin-bottom:16px}
+.del-group:last-child{margin-bottom:0}
+.del-list{border-radius:10px;overflow:hidden}
+.del-row{display:flex;align-items:center;gap:12px;padding:11px 15px;border-bottom:1px solid}
+.del-row:last-child{border-bottom:none}
+.del-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.del-name-text{font-size:13px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.del-detail{font-size:12px;color:var(--muted);margin-top:1px}
+.init-tag{font-size:11px;font-weight:600;color:#fff;padding:2px 9px;border-radius:99px;white-space:nowrap;flex-shrink:0}
+.all-clear{display:flex;align-items:center;gap:10px;color:#2E7D32;font-size:14px;font-weight:500}
+
+/* UPCOMING */
+.up-list{border:1px solid #C8E6C9;border-radius:10px;overflow:hidden}
+.up-row{display:flex;align-items:center;gap:14px;padding:11px 15px;border-bottom:1px solid #C8E6C9}
+.up-row:last-child{border-bottom:none}
+.up-date{min-width:52px;text-align:center;border-radius:9px;padding:5px 7px;border:1px solid}
+.up-date-d{font-size:18px;font-weight:700;font-family:'DM Mono',monospace;line-height:1}
+.up-date-m{font-size:10px;text-transform:uppercase}
+.up-name{flex:1;min-width:0;font-size:13px;font-weight:600;color:var(--navy)}
+.up-meta{font-size:12px;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:5px}
+.up-days{font-size:11px;font-weight:700}
+
+/* TRACK CARDS */
+.tracks{display:flex;flex-direction:column;gap:20px}
+.tcard{background:#fff;border-radius:16px;border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.tcard-accent{height:4px}
+.tcard-top{display:grid;grid-template-columns:1fr auto;gap:24px;padding:22px 24px 18px;border-bottom:1px solid var(--border)}
+.tcard-name{font-size:20px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.tcard-person-row{display:flex;align-items:flex-start;gap:6px;font-size:13px;color:var(--muted);margin-bottom:4px}
+.tcard-person-row i{font-size:13px;margin-top:2px;flex-shrink:0;color:var(--muted)}
+.tcard-person-label{font-weight:600;color:var(--navy);margin-right:4px;flex-shrink:0}
+.tcard-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;min-width:200px}
+
+/* SCORE RING */
+.score-ring{position:relative;width:80px;height:80px;cursor:pointer;transition:transform .15s}
+.score-ring:hover{transform:scale(1.05)}
 .score-ring svg{transform:rotate(-90deg)}
-.score-ring-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.score-num{font-size:16px;font-weight:700;color:var(--navy);font-family:monospace;line-height:1}
-.score-label{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
-.card-pills{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.sparkline-wrap{display:flex;align-items:flex-end;gap:3px;height:32px;padding:0 2px}
-.spark-bar{width:14px;border-radius:3px 3px 0 0;min-height:4px;cursor:default;transition:opacity .15s}
-.spark-bar:hover{opacity:.7}
-.spark-label{font-size:9px;color:var(--muted);text-align:center;margin-top:2px;font-family:monospace}
-.spark-section{display:flex;flex-direction:column}
-.alert{margin:0 24px 16px;padding:10px 14px;border-radius:8px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;border-left:3px solid}
-.alert i{font-size:14px}
-.card-body{display:flex;flex-direction:column;gap:0}
-.card-row{display:grid;gap:0;border-bottom:1px solid var(--border)}
-.card-row:last-child{border-bottom:none}
-.card-row-top{grid-template-columns:1fr 1fr}
-.card-row-bottom{grid-template-columns:1fr 1fr 1fr}
-.sec{padding:16px 20px;border-right:1px solid var(--border);position:relative}
-.sec:last-child{border-right:none}
-.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.sec-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;display:flex;align-items:center;gap:6px;cursor:pointer}
-.sec-title i{font-size:13px}
-.sec-title:hover span{text-decoration:underline}
-.sec-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px}
-.stat-grid{display:flex;flex-direction:column;gap:6px}
-.stat{display:flex;align-items:center;justify-content:space-between;font-size:12px}
-.stat-lbl{color:var(--muted)}
-.stat-val{font-weight:600;color:var(--navy);font-family:monospace}
-.stat-val.ck{cursor:pointer;color:var(--red);border-bottom:1.5px dashed var(--red);padding:0 2px}
-.stat-val.ck:hover{background:#FBE9E7;border-radius:3px}
-.stat-val.g{color:#2E7D32}
-.stat-val.ck.g{color:#2E7D32;border-bottom-color:#2E7D32}
-.stat-val.w{color:#E65100}
-.stat-val.ck.w{color:#E65100;border-bottom-color:#E65100}
-.prog{margin:8px 0 6px}
-.prog-row{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:4px}
-.prog-track{height:5px;background:#EEF0F2;border-radius:99px;overflow:hidden}
-.prog-fill{height:100%;border-radius:99px}
-.hbadge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;padding:3px 10px;border-radius:6px;margin-top:8px;border:1px solid;cursor:pointer}
-.hbd{width:6px;height:6px;border-radius:50%}
-.on-track .card-accent{background:var(--on-track)}
-.minor .card-accent{background:var(--minor-border)}
-.needs .card-accent{background:var(--needs-border)}
-.at-risk .card-accent{background:var(--at-risk-border)}
-.off-track .card-accent{background:var(--off-track-border)}
-.pill-on-track{background:var(--on-track-bg);color:var(--on-track);border-color:var(--on-track-border)}
-.pill-minor{background:var(--minor-bg);color:var(--minor);border-color:var(--minor-border)}
-.pill-needs{background:var(--needs-bg);color:var(--needs);border-color:var(--needs-border)}
-.pill-at-risk{background:var(--at-risk-bg);color:var(--at-risk);border-color:var(--at-risk-border)}
-.pill-off-track{background:var(--off-track-bg);color:var(--off-track);border-color:var(--off-track-border)}
-.pov{display:none;position:fixed;inset:0;background:rgba(15,17,30,.5);z-index:200;align-items:flex-start;justify-content:center;padding-top:72px;backdrop-filter:blur(2px)}
-.pov.open{display:flex}
-.pan{background:#fff;border-radius:16px;padding:0;width:92%;max-width:480px;box-shadow:0 24px 64px rgba(0,0,0,.2);max-height:80vh;overflow:hidden;display:flex;flex-direction:column}
-.pan-hdr{padding:20px 24px 16px;border-bottom:1px solid var(--border);flex-shrink:0}
-.pan-init{font-size:10px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
-.pan-title{font-size:16px;font-weight:700;color:var(--navy)}
-.pan-sub{font-size:12px;color:var(--muted);margin-top:2px}
-.pan-close{position:absolute;top:16px;right:20px;background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .15s}
-.pan-close:hover{background:#f5f5f5;color:var(--red)}
-.pan-body{padding:16px 24px;overflow-y:auto;flex:1}
-.pan-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:.5px solid var(--border)}
-.pan-row:last-child{border:none}
-.pan-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
-.pan-main{flex:1}
-.pan-name{font-size:13px;font-weight:600;color:var(--navy)}
-.pan-meta{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.5}
-.pan-st{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;flex-shrink:0;white-space:nowrap;border:1px solid}
-.rtov{display:none;position:fixed;inset:0;z-index:300;align-items:flex-start;justify-content:center;padding-top:72px;backdrop-filter:blur(2px);background:rgba(15,17,30,.4)}
-.rtov.open{display:flex}
-.rtbox{background:#fff;border-radius:16px;padding:24px;width:92%;max-width:380px;box-shadow:0 24px 64px rgba(0,0,0,.2);border-top:4px solid}
-.rtlbl{font-size:17px;font-weight:700;margin-bottom:8px}
-.rtdef{font-size:13px;line-height:1.7;margin-bottom:14px;color:#444}
-.rtchips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
-.rtchip{font-size:11px;padding:3px 10px;border-radius:6px;background:#f5f6f8;color:var(--muted);border:1px solid var(--border)}
-.rtnote{font-size:11px;color:var(--muted);padding:8px 12px;background:#f5f6f8;border-radius:8px;line-height:1.5}
-.dur-pill{display:inline-flex;align-items:center;gap:4px;background:#f5f6f8;border:1px solid var(--border);border-radius:99px;padding:2px 8px;font-size:10px;font-weight:600;color:var(--muted)}
-.rtx{float:right;background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer;margin:-4px -4px 0 8px}
-.rtx:hover{color:var(--red)}
-.loading{text-align:center;padding:80px 20px;color:var(--muted)}
-.lsp{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+.score-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.score-num{font-size:20px;font-weight:700;font-family:'DM Mono',monospace;line-height:1;color:var(--navy)}
+.score-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;margin-top:2px}
+.score-hint{font-size:10px;color:var(--muted);text-decoration:underline dotted;cursor:pointer;margin-top:2px}
+
+.spark-row{display:flex;align-items:flex-end;gap:3px;height:24px}
+.spark-b{border-radius:2px 2px 0 0;min-height:3px}
+.t-up{color:#2E7D32;font-weight:600;font-size:12px;display:inline-flex;align-items:center;gap:3px}
+.t-dn{color:#C62828;font-weight:600;font-size:12px;display:inline-flex;align-items:center;gap:3px}
+.t-st{color:var(--muted);font-weight:600;font-size:12px;display:inline-flex;align-items:center;gap:3px}
+
+/* CARD BODY */
+.tcard-body{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border)}
+.tcard-section{padding:18px 20px;border-right:1px solid var(--border)}
+.tcard-section:last-child{border-right:none}
+.tsec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.tsec-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:6px}
+.tsec-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px}
+.ms-prog-bar{height:6px;background:#EEF0F2;border-radius:99px;overflow:hidden;margin:8px 0 12px}
+.ms-prog-fill{height:100%;border-radius:99px}
+.ms-counts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ms-count-btn{display:flex;align-items:center;gap:7px;padding:8px 10px;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:#fafbfc;font-size:13px;transition:background .15s}
+.ms-count-btn:hover{background:#e8eaf0}
+.ms-count-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ms-count-label{color:var(--muted);flex:1}
+.ms-count-val{font-weight:700;font-family:'DM Mono',monospace;color:var(--navy)}
+
+/* METRICS */
+.metric-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f3f4f6}
+.metric-row:last-child{border-bottom:none}
+.metric-name{flex:1;font-size:13px;color:var(--navy);font-weight:500}
+.metric-not-entered{font-size:11px;color:#9b9fad;font-style:italic}
+.metric-bar{height:5px;background:#EEF0F2;border-radius:99px;overflow:hidden;width:80px}
+.metric-bar-fill{height:100%;border-radius:99px}
+
+/* BUDGET */
+.bud-summary{display:flex;gap:12px;margin-bottom:12px}
+.bud-stat{flex:1;background:#fafbfc;border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+.bud-stat-label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.bud-stat-val{font-size:18px;font-weight:700;font-family:'DM Mono',monospace;color:var(--navy)}
+.bud-stat-cur{font-size:11px;color:var(--muted);margin-top:2px}
+.tcard-body-three{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border)}
+
+/* POPUP */
+.overlay{display:none;position:fixed;inset:0;background:rgba(15,17,30,.5);z-index:200;align-items:flex-start;justify-content:center;padding-top:72px;backdrop-filter:blur(2px)}
+.overlay.open{display:flex}
+.popup{background:#fff;border-radius:16px;width:92%;max-width:540px;box-shadow:0 24px 64px rgba(0,0,0,.2);max-height:82vh;overflow:hidden;display:flex;flex-direction:column}
+.popup-hdr{padding:20px 24px 16px;border-bottom:1px solid var(--border);flex-shrink:0;position:relative}
+.popup-track{font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+.popup-title{font-size:16px;font-weight:700;color:var(--navy)}
+.popup-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.popup-close{position:absolute;top:16px;right:20px;background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.popup-close:hover{background:#f5f5f5;color:var(--red)}
+.popup-body{padding:16px 24px;overflow-y:auto;flex:1}
+.popup-row{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:.5px solid var(--border)}
+.popup-row:last-child{border-bottom:none}
+.popup-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.popup-name{font-size:13px;font-weight:600;color:var(--navy)}
+.popup-meta{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.6}
+.popup-notes{font-size:12px;color:#444;margin-top:6px;background:#f7f8fa;border-radius:6px;padding:7px 10px;border-left:3px solid #ddd;line-height:1.5}
+.popup-st{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;flex-shrink:0;white-space:nowrap;border:1px solid}
+
+/* AI WHY POPUP */
+.ai-why-body{padding:20px 24px}
+.ai-why-loading{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:14px;padding:10px 0}
+.ai-why-spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+.ai-why-text{font-size:14px;color:var(--text);line-height:1.8;white-space:pre-wrap}
+.ai-why-signals{margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+.ai-why-signal-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.ai-signal-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f3f4f6;font-size:13px}
+.ai-signal-row:last-child{border-bottom:none}
+.ai-signal-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
 @keyframes spin{to{transform:rotate(360deg)}}
-.footer{text-align:center;padding:24px;font-size:12px;color:var(--muted);border-top:1px solid var(--border);margin-top:32px}
+.loading{text-align:center;padding:80px 20px;color:var(--muted);font-size:14px}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+.footer{text-align:center;padding:28px;font-size:12px;color:var(--muted);border-top:1px solid var(--border);margin-top:8px}
 .footer a{color:var(--red);text-decoration:none}
-@media(max-width:900px){.main{padding:16px}.card-row-top,.card-row-bottom{grid-template-columns:1fr}}
+@media(max-width:900px){.main{padding:16px}.top-strip,.legend-grid,.trend-grid,.tcard-body,.tcard-body-three{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
+
 <div class="hdr">
-  <div class="hdr-logo">
-    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAtklEQVQ4y2NgGAWkAMb///+zMDAwMJADGBkZGf///2f4TybNyMj4HwAY/pMJGBn/IwGjPAMDw38AAAAASUVORK5CYII=" alt="InApp" style="height:48px;width:auto">
+  <div class="hdr-logos">
+    <img src="https://mekhanil1055.github.io/orbitnext-dashboard/OrbitNext%20Logo.png" alt="OrbitNext" onerror="this.style.display='none'">
+    <div class="hdr-divider"></div>
+    <img src="https://mekhanil1055.github.io/orbitnext-dashboard/inapp-logo.png" alt="InApp" onerror="this.style.display='none'">
   </div>
   <div class="hdr-center">
-    <div class="hdr-title">Initiative Tracker Dashboard</div>
+    <div class="hdr-title">OrbitNext 2.0 — Initiative Tracker</div>
     <div class="hdr-tag">One Team. One Mission. One Leap Forward.</div>
   </div>
   <div class="hdr-right">
-    <div class="ts-wrap"><i class="ti ti-clock"></i><span id="ts">Loading...</span></div>
-    <button class="rbtn" onclick="loadData()"><i class="ti ti-refresh"></i> Refresh</button>
+    <div class="ts-wrap"><i class="ti ti-clock" style="color:var(--red);font-size:13px"></i><span id="ts">Loading...</span></div>
+    <button class="rbtn" onclick="loadData()"><i class="ti ti-refresh"></i>Refresh</button>
   </div>
 </div>
 
-<div class="main">
-
-  <!-- Legend -->
-  <div style="background:#fff;border-radius:16px;border:1px solid var(--border);padding:16px 24px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-      <i class="ti ti-info-circle" style="color:var(--red);font-size:15px"></i>
-      <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">How to read this dashboard</span>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden">
-      <div style="padding:14px 16px;border-right:1px solid var(--border)">
-        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Overall score %</div>
-        <div style="font-size:12px;color:var(--text);line-height:1.6">Weighted health across 5 dimensions</div>
-        <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px">
-          <span style="font-size:10px;background:#EEF0F2;color:var(--muted);padding:2px 7px;border-radius:4px">Milestones 35%</span>
-          <span style="font-size:10px;background:#EEF0F2;color:var(--muted);padding:2px 7px;border-radius:4px">Deliverables 20%</span>
-          <span style="font-size:10px;background:#EEF0F2;color:var(--muted);padding:2px 7px;border-radius:4px">Budget 15%</span>
-          <span style="font-size:10px;background:#EEF0F2;color:var(--muted);padding:2px 7px;border-radius:4px">Metrics 15%</span>
-          <span style="font-size:10px;background:#EEF0F2;color:var(--muted);padding:2px 7px;border-radius:4px">Dependencies 15%</span>
-        </div>
-      </div>
-      <div style="padding:14px 16px;border-right:1px solid var(--border)">
-        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Status thresholds</div>
-        <div style="display:flex;flex-direction:column;gap:5px">
-          <div style="display:flex;align-items:center;gap:7px"><span style="width:8px;height:8px;border-radius:50%;background:#2E7D32;flex-shrink:0"></span><span style="font-size:11px;color:var(--text)">On Track</span><span style="font-size:10px;color:var(--muted);margin-left:auto;font-family:monospace">&ge; 85%</span></div>
-          <div style="display:flex;align-items:center;gap:7px"><span style="width:8px;height:8px;border-radius:50%;background:#F9A825;flex-shrink:0"></span><span style="font-size:11px;color:var(--text)">Minor Concerns</span><span style="font-size:10px;color:var(--muted);margin-left:auto;font-family:monospace">70&ndash;84%</span></div>
-          <div style="display:flex;align-items:center;gap:7px"><span style="width:8px;height:8px;border-radius:50%;background:#FB8C00;flex-shrink:0"></span><span style="font-size:11px;color:var(--text)">Needs Attention</span><span style="font-size:10px;color:var(--muted);margin-left:auto;font-family:monospace">50&ndash;69%</span></div>
-          <div style="display:flex;align-items:center;gap:7px"><span style="width:8px;height:8px;border-radius:50%;background:#EF5350;flex-shrink:0"></span><span style="font-size:11px;color:var(--text)">At Risk</span><span style="font-size:10px;color:var(--muted);margin-left:auto;font-family:monospace">30&ndash;49%</span></div>
-          <div style="display:flex;align-items:center;gap:7px"><span style="width:8px;height:8px;border-radius:50%;background:#B71C1C;flex-shrink:0"></span><span style="font-size:11px;color:var(--text)">Off Track</span><span style="font-size:10px;color:var(--muted);margin-left:auto;font-family:monospace">&lt; 30%</span></div>
-        </div>
-      </div>
-      <div style="padding:14px 16px;border-right:1px solid var(--border)">
-        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Trend</div>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <div style="display:flex;align-items:center;gap:8px"><span style="display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;color:#2E7D32"><i class="ti ti-trending-up"></i> Improving</span><span style="font-size:11px;color:var(--muted)">Score up &gt;5% vs last week</span></div>
-          <div style="display:flex;align-items:center;gap:8px"><span style="display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--muted)"><i class="ti ti-minus"></i> Stable</span><span style="font-size:11px;color:var(--muted)">Score within &plusmn;5% of last week</span></div>
-          <div style="display:flex;align-items:center;gap:8px"><span style="display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;color:#C62828"><i class="ti ti-trending-down"></i> Declining</span><span style="font-size:11px;color:var(--muted)">Score down &gt;5% vs last week</span></div>
-        </div>
-      </div>
-      <div style="padding:14px 16px">
-        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Duration</div>
-        <div style="font-size:12px;color:var(--text);line-height:1.6;margin-bottom:10px">&#128336; <strong>N wks</strong> &mdash; how long the initiative has been at its current status</div>
-        <div style="background:#f7f8fa;border-radius:8px;padding:8px 10px;font-size:11px;color:var(--muted);line-height:1.6">Click &#128336; on any row to see the full score history and dimension breakdown</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="ov-card" id="ocard" style="display:none">
-    <div class="ov-hdr">
-      <div class="ov-hdr-left"><i class="ti ti-layout-dashboard"></i><span class="ov-title">Initiative overview</span></div>
-      <span class="ov-prog-label" id="ov-prog-label"></span>
-    </div>
-    <div id="irows"></div>
-    <div class="mstrip" id="mstrip"></div>
-  </div>
-
-  <!-- ═══ LEADERSHIP PULSE SECTIONS ═══════════════════════════════════════ -->
-  <div id="leadership-pulse" style="display:none">
-
-    <!-- Section 1: How it's been going -->
-    <div style="background:#fff;border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#1A1D2E 0%,#2B2D42 100%)">
-        <div style="display:flex;align-items:center;gap:8px">
-          <i class="ti ti-chart-bar" style="color:rgba(255,255,255,.5);font-size:15px"></i>
-          <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,.9);text-transform:uppercase;letter-spacing:.08em">How it&rsquo;s been going &mdash; overall trend</span>
-        </div>
-        <span style="font-size:11px;color:rgba(255,255,255,.5);font-style:italic">Week-by-week composite score across all initiatives</span>
-      </div>
-      <div style="padding:20px 24px" id="trend-section"></div>
-    </div>
-
-    <!-- Section 2: What has delayed -->
-    <div style="background:#fff;border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#4A0000 0%,#7A1518 100%)">
-        <div style="display:flex;align-items:center;gap:8px">
-          <i class="ti ti-alert-triangle" style="color:rgba(255,255,255,.5);font-size:15px"></i>
-          <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,.9);text-transform:uppercase;letter-spacing:.08em">What has delayed</span>
-        </div>
-        <span id="delayed-count-badge" style="font-size:11px;color:rgba(255,255,255,.6)"></span>
-      </div>
-      <div style="padding:20px 24px" id="delayed-section"></div>
-    </div>
-
-    <!-- Section 3: What is coming up -->
-    <div style="background:#fff;border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#1B5E20 0%,#2E7D32 100%)">
-        <div style="display:flex;align-items:center;gap:8px">
-          <i class="ti ti-calendar-event" style="color:rgba(255,255,255,.5);font-size:15px"></i>
-          <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,.9);text-transform:uppercase;letter-spacing:.08em">What&rsquo;s coming up &mdash; next 2 weeks</span>
-        </div>
-        <span id="upcoming-count-badge" style="font-size:11px;color:rgba(255,255,255,.6)"></span>
-      </div>
-      <div style="padding:20px 24px" id="upcoming-section"></div>
-    </div>
-
-  </div>
-  <!-- ═══ END LEADERSHIP PULSE ════════════════════════════════════════════ -->
-
-  <div class="cards" id="cards">
-    <div class="loading"><div class="lsp"></div>Loading initiative data...</div>
-  </div>
-  <div class="footer">OrbitNext 2.0 &middot; InApp Information Technologies &middot; <a href="https://www.inapp.com" target="_blank">inapp.com</a> &middot; Data sourced live from Google Sheets</div>
+<div class="main" id="main">
+  <div class="loading"><div class="spinner"></div>Loading initiative data...</div>
 </div>
 
-<div class="pov" id="pov" onclick="if(event.target===this)closePanel()">
-  <div class="pan" style="position:relative">
-    <div class="pan-hdr">
-      <div class="pan-init" id="pan-init"></div>
-      <div class="pan-title" id="pan-title">Details</div>
-      <div class="pan-sub" id="pan-sub"></div>
-      <button class="pan-close" onclick="closePanel()">&#10005;</button>
+<div class="footer">OrbitNext 2.0 &middot; InApp Information Technologies &middot; <a href="https://www.inapp.com" target="_blank">inapp.com</a> &middot; Data sourced live from Google Sheets</div>
+
+<!-- POPUP (milestones / deliverables) -->
+<div class="overlay" id="overlay" onclick="if(event.target===this)closePopup()">
+  <div class="popup">
+    <div class="popup-hdr">
+      <div class="popup-track" id="pop-track"></div>
+      <div class="popup-title" id="pop-title"></div>
+      <div class="popup-sub" id="pop-sub"></div>
+      <button class="popup-close" onclick="closePopup()">&#10005;</button>
     </div>
-    <div class="pan-body" id="pan-body"></div>
+    <div class="popup-body" id="pop-body"></div>
   </div>
 </div>
 
-<div class="rtov" id="rtov" onclick="if(event.target===this)closeRag()">
-  <div class="rtbox" id="rtbox">
-    <button class="rtx" onclick="closeRag()">&#10005;</button>
-    <div class="rtlbl" id="rtlbl"></div>
-    <div class="rtdef" id="rtdef"></div>
-    <div class="rtchips" id="rtchips"></div>
-    <div class="rtnote">Evaluated Off Track &rarr; At Risk &rarr; Needs Attention &rarr; Minor Concerns &rarr; On Track. First override match wins, then weighted score threshold.</div>
+<!-- AI WHY POPUP -->
+<div class="overlay" id="ai-overlay" onclick="if(event.target===this)closeAiPopup()">
+  <div class="popup">
+    <div class="popup-hdr">
+      <div class="popup-track" id="ai-pop-track"></div>
+      <div class="popup-title" id="ai-pop-title">Score Analysis</div>
+      <div class="popup-sub" id="ai-pop-sub"></div>
+      <button class="popup-close" onclick="closeAiPopup()">&#10005;</button>
+    </div>
+    <div class="ai-why-body" id="ai-pop-body">
+      <div class="ai-why-loading"><div class="ai-why-spinner"></div>Analysing initiative data...</div>
+    </div>
   </div>
 </div>
 
 <script>
 var DATA_URL = "https://script.google.com/macros/s/AKfycbwgkS45kGFl1s-8z-W2nFdO4YQYEE-I3DbM2XbZ5G4sQUsA6uJaxu3X6GNTg5LZJmBvWg/exec?serve=data";
+var PROGRAM_START = new Date("2026-04-10");
+var TOTAL_WEEKS = 52;
 var D = [];
-var _CR = {}, _CRi = 0;
 
-var PROGRAM_START = new Date("2026-05-01");
-var TRACK_WEEKS = {
-  "I1 - SaaSw": 26, "I2 - AI Native": 52, "I3 - GTM": 26, "I4 - Nearshore": 26,
-  "SaaSw (Service as a Softare)":26,"SaaSw (Service as a Software)":26,
-  "AI-Native Organization":52,"GTM – HHS & Construction":26,
-  "GTM - HHS & Construction":26,"Nearshore / Onshore & Satellite Offices":26
+var SDOT = {"Completed":"#2E7D32","In Progress":"#1565C0","Not Started":"#9b9fad","On Hold":"#F9A825","Delayed":"#C62828","Pending":"#E65100","Blocked":"#B71C1C","Resolved":"#2E7D32"};
+var STATUS_CFG = {
+  "On Track":       {dot:"#2E7D32",bg:"#E8F5E9",border:"#A5D6A7",text:"#2E7D32"},
+  "Minor Concerns": {dot:"#F9A825",bg:"#FFFDE7",border:"#F9A825",text:"#7A6000"},
+  "Needs Attention":{dot:"#FB8C00",bg:"#FFF3E0",border:"#FB8C00",text:"#BF5000"},
+  "At Risk":        {dot:"#EF5350",bg:"#FFEBEE",border:"#EF9A9A",text:"#C62828"},
+  "Off Track":      {dot:"#B71C1C",bg:"#FCE4E4",border:"#B71C1C",text:"#4A0000"}
 };
 
-var SM = {
-  "On Track":      {cls:"on-track",  pill:"pill-on-track", dot:"#2E7D32", lbl:"On Track"},
-  "Minor Concerns":{cls:"minor",     pill:"pill-minor",    dot:"#F9A825", lbl:"Minor Concerns"},
-  "Needs Attention":{cls:"needs",    pill:"pill-needs",    dot:"#FB8C00", lbl:"Needs Attention"},
-  "At Risk":       {cls:"at-risk",   pill:"pill-at-risk",  dot:"#EF5350", lbl:"At Risk"},
-  "Off Track":     {cls:"off-track", pill:"pill-off-track",dot:"#B71C1C", lbl:"Off Track"}
-};
-var SDOT = {"Completed":"#2E7D32","In Progress":"#1565C0","Not Started":"#9b9fad",
-            "On Hold":"#F9A825","Delayed":"#C62828","Pending":"#E65100",
-            "Blocked":"#B71C1C","Resolved":"#2E7D32","At Risk":"#FB8C00"};
-
-var RD = {
-  "On Track":      {col:"#2E7D32",bg:"#E8F5E9",bdr:"#2E7D32",lbl:"On Track — Performing well",def:"Weighted score ≥ 85%. Initiative is progressing well across all five dimensions with no critical overrides triggered.",chips:["Score ≥ 85%","No hard overrides","All milestones on schedule","Budget within variance"]},
-  "Minor Concerns":{col:"#7A6000",bg:"#FFFDE7",bdr:"#F9A825",lbl:"Minor Concerns — Monitor",def:"Weighted score 70–84%. Small signals present but nothing requiring immediate action.",chips:["Score 70–84%","Minor delays or gaps","Some KPIs missing actuals","Watch dependencies"]},
-  "Needs Attention":{col:"#BF5000",bg:"#FFF3E0",bdr:"#FB8C00",lbl:"Needs Attention — Owner action",def:"Weighted score 50–69% or a hard override triggered. Owner must create a recovery plan before next leadership review.",chips:["Score 50–69%","High priority dep blocked","Budget deviation 10–15%","Deliverables overdue"]},
-  "At Risk":       {col:"#C62828",bg:"#FFEBEE",bdr:"#EF5350",lbl:"At Risk — Leadership aware",def:"Weighted score 30–49% or a hard override triggered. Leadership should be actively involved.",chips:["Score 30–49%","30%+ milestones delayed","30%+ deliverables overdue","Critical dependency blocked"]},
-  "Off Track":     {col:"#4A0000",bg:"#FCE4E4",bdr:"#B71C1C",lbl:"Off Track — Immediate escalation",def:"Weighted score < 30%. Initiative is in serious trouble requiring immediate leadership intervention.",chips:["Score < 30%","Multiple critical failures","Sustained negative trend","Executive escalation needed"]}
-};
-
-function sm(s){return SM[s]||SM["Needs Attention"];}
-function fn(n){return n?Number(n).toLocaleString():"-";}
-function weekNum(){var ms=new Date()-PROGRAM_START;return Math.floor(ms/(7*24*60*60*1000))+1;}
-function getWeeks(iname){return TRACK_WEEKS[iname]||26;}
+function sc(s){return STATUS_CFG[s]||STATUS_CFG["Needs Attention"];}
+function pillHtml(s){var c=sc(s);return '<span class="s-pill" style="background:'+c.bg+';color:'+c.text+';border-color:'+c.border+'">'+s+'</span>';}
 function progColor(p){return p>=85?"#2E7D32":p>=70?"#F9A825":p>=50?"#FB8C00":p>=30?"#EF5350":"#B71C1C";}
+function weekNum(){return Math.floor((new Date()-PROGRAM_START)/604800000)+1;}
+function parseDate(str){if(!str)return null;str=(str+"").trim();var m=str.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return new Date(+m[1],+m[2]-1,+m[3]);m=str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);if(m)return new Date(+m[3],+m[2]-1,+m[1]);var d=new Date(str);return isNaN(d)?null:d;}
+function fmt(n){if(!n&&n!==0)return "–";if(typeof n==="string")n=parseFloat(n.replace(/[^0-9.\-]/g,""));if(isNaN(n))return "–";return n>=1000000?(n/1000000).toFixed(1)+"M":n>=1000?(n/1000).toFixed(0)+"K":String(Math.round(n));}
+function trendArrow(t){if(t==="up")return '<span class="t-up"><i class="ti ti-trending-up"></i>Improving</span>';if(t==="down")return '<span class="t-dn"><i class="ti ti-trending-down"></i>Declining</span>';return '<span class="t-st"><i class="ti ti-minus"></i>Stable</span>';}
 
-function showRag(status){
-  var d=RD[status]; if(!d)return;
-  document.getElementById("rtlbl").textContent=d.lbl;
-  document.getElementById("rtlbl").style.color=d.col;
-  document.getElementById("rtdef").textContent=d.def;
-  document.getElementById("rtchips").innerHTML=d.chips.map(function(c){return '<span class="rtchip">'+c+'</span>';}).join("");
-  var box=document.getElementById("rtbox");
-  box.style.borderTopColor=d.bdr; box.style.background=d.bg;
-  document.getElementById("rtov").classList.add("open");
+function scoreRing(score,color,dIdx){
+  var r=34,circ=2*Math.PI*r,dash=circ*(score/100),gap=circ-dash;
+  return '<div class="score-ring" onclick="showAiWhy('+dIdx+')" title="Click for score analysis">'
+    +'<svg width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="40" r="'+r+'" fill="none" stroke="#EEF0F2" stroke-width="6"/>'
+    +'<circle cx="40" cy="40" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="6" stroke-dasharray="'+dash+' '+gap+'" stroke-linecap="round"/></svg>'
+    +'<div class="score-inner"><div class="score-num">'+score+'</div><div class="score-lbl" style="text-decoration:underline dotted;cursor:pointer">Why?</div></div></div>';
 }
-function closeRag(){document.getElementById("rtov").classList.remove("open");}
 
-function openPanel(type,iname){
-  var d=null;
-  for(var i=0;i<D.length;i++){if(D[i]["Initiative"]===iname){d=D[i];break;}}
-  var title="",sub="",init="",body="";
-  function prow(name,meta,status){
-    var dc=SDOT[status]||"#9b9fad";
-    return '<div class="pan-row"><div class="pan-dot" style="background:'+dc+'"></div><div class="pan-main"><div class="pan-name">'+name+'</div><div class="pan-meta">'+(meta||"")+'</div></div><span class="pan-st" style="background:'+dc+'22;color:'+dc+';border-color:'+dc+'44">'+status+'</span></div>';
-  }
-  function empty(t){return '<div style="color:var(--muted);font-size:13px;padding:16px 0;text-align:center">'+t+'</div>';}
-
-  if(type==="ms-all"||type==="ms-done"||type==="ms-ip"||type==="ms-del"||type==="ms-hold"){
-    var ms=d&&d["_milestones"]||[];
-    var filterMap={"ms-all":null,"ms-done":"Completed","ms-ip":"In Progress","ms-del":"Delayed","ms-hold":"On Hold"};
-    var filter=filterMap[type];
-    var items=filter?ms.filter(function(m){return m.status===filter;}):ms;
-    var titleMap={"ms-all":"All milestones","ms-done":"Completed milestones","ms-ip":"In-progress milestones","ms-del":"Delayed milestones","ms-hold":"On hold milestones"};
-    title=titleMap[type]||"Milestones"; sub=items.length+" milestones"; init=d?d["Initiative"]:"All";
-    if(items.length){items.forEach(function(m){body+=prow(m.name,"End: "+m.end+(m.priority?" · Priority: "+m.priority:""),m.status);});}
-    else body=empty("No milestones in this category.");
-  } else if(type==="del-all"||type==="del-done"||type==="del-del"){
-    var dl=d&&d["_deliverables"]||[];
-    var dlFilterMap={"del-all":null,"del-done":"Completed","del-del":"Delayed"};
-    var filter=dlFilterMap[type];
-    var items=filter?dl.filter(function(x){return x.status===filter;}):dl;
-    var dlTitleMap={"del-all":"All deliverables","del-done":"Completed deliverables","del-del":"Delayed deliverables"};
-    title=dlTitleMap[type]||"Deliverables"; sub=items.length+" deliverables"; init=d?d["Initiative"]:"";
-    if(items.length){items.forEach(function(x){body+=prow(x.name,"Target: "+x.targetDate+(x.linked?" · Linked: "+x.linked:""),x.status);});}
-    else body=empty("No deliverables in this category.");
-  } else if(type==="kpi-all"||type==="kpi-miss"){
-    var mx=d&&d["_metrics"]||[];
-    var items=type==="kpi-miss"?mx.filter(function(m){return !m.actual;}):mx;
-    title=type==="kpi-miss"?"KPIs missing actuals":"All KPIs"; sub=items.length+" KPIs"; init=d?d["Initiative"]:"";
-    if(items.length){items.forEach(function(m){var ha=m.actual&&m.actual!=="";body+=prow(m.name,"Target: "+m.target+(m.unit?" · "+m.unit:"")+(ha?" · Actual: "+m.actual:""),ha?"Completed":"Pending");});}
-    else body=empty("No KPIs in this category.");
-  } else if(type==="dep-all"||type==="dep-blk"||type==="dep-hi"){
-    var dx=d&&d["_deps"]||[];
-    var depItemMap={"dep-all":dx,"dep-blk":dx.filter(function(x){return x.status==="Blocked";}),"dep-hi":dx.filter(function(x){return x.priority==="High"&&x.status!=="Resolved";})};
-    var items=depItemMap[type];
-    var depTitleMap={"dep-all":"All dependencies","dep-blk":"Blocked dependencies","dep-hi":"High priority dependencies"};
-    title=depTitleMap[type]; sub=items.length+" dependencies"; init=d?d["Initiative"]:"";
-    if(items.length){items.forEach(function(dep){body+=prow(dep.name,"Provider: "+dep.provider+" · Priority: "+dep.priority+(dep.affects?" · Affects: "+dep.affects:""),dep.status);});}
-    else body=empty("No dependencies in this category.");
-  } else if(type==="bud-all"){
-    var bx=d&&d["_budget"]||[];
-    title="Budget lines"; sub=bx.length+" lines"; init=d?d["Initiative"]:"";
-    if(bx.length){bx.forEach(function(b){body+=prow(b.name,"Currency: "+b.currency+" · Approved: "+fn(b.approved)+(b.spent?" · Spent: "+fn(b.spent):""),b.spent>0?"In Progress":"Not Started");});}
-    else body=empty("No budget lines found.");
-  } else if(type==="all-del-ms"){
-    title="All delayed milestones"; sub="Across all initiatives"; init="All initiatives";
-    D.forEach(function(x){var ms=x["_milestones"]||[],delayed=ms.filter(function(m){return m.status==="Delayed";});
-      if(delayed.length){body+='<div style="font-size:10px;font-weight:700;color:var(--red);padding:8px 0 4px;text-transform:uppercase;letter-spacing:.04em">'+x["Initiative"]+'</div>';
-        delayed.forEach(function(m){body+=prow(m.name,"End: "+m.end+" · Priority: "+m.priority,"Delayed");});}});
-    if(!body)body=empty("No delayed milestones across any initiative.");
-  } else if(type==="all-hi-dep"){
-    title="High priority pending dependencies"; sub="Across all initiatives"; init="All initiatives";
-    D.forEach(function(x){var dx=x["_deps"]||[],hi=dx.filter(function(d){return d.priority==="High"&&d.status!=="Resolved";});
-      if(hi.length){body+='<div style="font-size:10px;font-weight:700;color:var(--red);padding:8px 0 4px;text-transform:uppercase;letter-spacing:.04em">'+x["Initiative"]+'</div>';
-        hi.forEach(function(dep){body+=prow(dep.name,"Provider: "+dep.provider,dep.status);});}});
-    if(!body)body=empty("No high priority pending dependencies.");
-  }
-
-  document.getElementById("pan-init").textContent=init||"";
-  document.getElementById("pan-title").textContent=title;
-  document.getElementById("pan-sub").textContent=sub;
-  document.getElementById("pan-body").innerHTML=body||empty("No data available.");
-  document.getElementById("pov").classList.add("open");
+function sparkline(history){
+  if(!history||!history.length)return '';
+  var h='<div class="spark-row">';
+  history.forEach(function(e,i){var ht=Math.max(3,Math.round((e.score/100)*22));h+='<div class="spark-b" style="height:'+ht+'px;width:10px;background:'+progColor(e.score)+';opacity:'+(i===history.length-1?1:.55)+'" title="Wk'+e.week+': '+e.score+'"></div>';});
+  return h+'</div>';
 }
-function closePanel(){document.getElementById("pov").classList.remove("open");}
 
-function _showHistory(iid){
-  var d=null;
-  for(var i=0;i<D.length;i++){if(D[i]["Initiative"].replace(/[^a-zA-Z0-9]/g,"_")===iid){d=D[i];break;}}
-  if(!d) return;
-  var history=d["ScoreHistory"]||[];
+// ── AI WHY (calls Anthropic API) ────────────────────────────
+function showAiWhy(dIdx){
+  var d=D[dIdx]; if(!d) return;
+  var name=(d["Initiative"]||"").replace(/^I\d+\s*-\s*/,"").trim();
+  var score=d["Overall Score"]||0;
   var status=d["Overall Status"]||"";
+
+  document.getElementById("ai-pop-track").textContent=name;
+  document.getElementById("ai-pop-title").textContent="Score Analysis — "+score+"/100";
+  document.getElementById("ai-pop-sub").textContent=status;
+  document.getElementById("ai-pop-body").innerHTML='<div class="ai-why-loading"><div class="ai-why-spinner"></div>Analysing initiative data...</div>';
+  document.getElementById("ai-overlay").classList.add("open");
+
+  // Build data signals for AI
+  var ms=d["_milestones"]||[];
+  var msDl=ms.filter(function(m){return m.status==="Delayed";});
+  var msIP=ms.filter(function(m){return m.status==="In Progress";});
+  var msDone=ms.filter(function(m){return m.status==="Completed";});
+  var metrics=d["_metrics"]||[];
+  var metMissing=metrics.filter(function(m){return !m.actual||m.actual.trim()==="";});
+  var metEntered=metrics.filter(function(m){return m.actual&&m.actual.trim()!==""});
+  var deps=d["_deps"]||[];
+  var depsBlocked=deps.filter(function(dep){return dep.status==="Blocked";});
+  var depsPending=deps.filter(function(dep){return dep.status==="Pending"&&dep.priority==="High";});
+  var delivs=d["_deliverables"]||[];
+  var delivsDl=delivs.filter(function(dl){return dl.status==="Delayed";});
+
+  var promptData="Initiative: "+name+"\nScore: "+score+"/100\nStatus: "+status+"\n";
+  promptData+="Timeline: "+(d["Timeline"]||"?")+" | Week: "+weekNum()+" of "+TOTAL_WEEKS+"\n\n";
+  promptData+="MILESTONES ("+ms.length+" total):\n";
+  promptData+="- Completed: "+msDone.length+"\n";
+  promptData+="- In Progress: "+msIP.length+"\n";
+  promptData+="- Delayed: "+msDl.length+"\n";
+  if(msDl.length) promptData+="  Delayed items: "+msDl.map(function(m){return m.name+(m.notes?" ["+m.notes+"]":"");}).join("; ")+"\n";
+  if(msIP.length) promptData+="  In Progress: "+msIP.map(function(m){return m.name+(m.notes?" ["+m.notes+"]":"");}).join("; ")+"\n";
+
+  promptData+="\nSUCCESS METRICS ("+metrics.length+" total):\n";
+  metEntered.forEach(function(m){promptData+="- "+m.name+": target="+m.target+", actual="+m.actual+" ("+m.unit+")\n";});
+  if(metMissing.length) promptData+="- "+metMissing.length+" metric"+(metMissing.length>1?"s":"")+" have no actuals yet: "+metMissing.map(function(m){return m.name;}).join(", ")+"\n";
+
+  if(deps.length){
+    promptData+="\nDEPENDENCIES:\n";
+    if(depsBlocked.length) promptData+="- BLOCKED: "+depsBlocked.map(function(d){return d.name+" (provider: "+d.provider+")";}).join("; ")+"\n";
+    if(depsPending.length) promptData+="- High priority pending: "+depsPending.map(function(d){return d.name;}).join("; ")+"\n";
+  }
+
+  if(delivs.length){
+    promptData+="\nDELIVERABLES:\n";
+    if(delivsDl.length) promptData+="- Delayed: "+delivsDl.map(function(dl){return dl.name;}).join("; ")+"\n";
+  }
+
+  promptData+="\nSCORE COMPONENTS:\n";
+  promptData+="- Milestone score: "+d["MilestoneScore"]+"% (70% of base)\n";
+  promptData+="- Metrics score: "+d["MetricsScore"]+"% (30% of base)\n";
+  promptData+="- Base score: "+d["BaseScore"]+"%\n";
+  promptData+="- Deliverable adjustment: "+(d["DeliverableAdj"]||0)+" pts\n";
+  promptData+="- Dependency adjustment: "+(d["DependencyAdj"]||0)+" pts\n";
+  promptData+="- Budget adjustment: "+(d["BudgetAdj"]||0)+" pts\n";
+
   var trend=d["Trend"]||"stable";
-  var weeksAt=d["WeeksAtStatus"]||1;
-  var wk=weekNum();
-  var trendLabel=trend==="up"?"Improving":trend==="down"?"Declining":"Stable";
-  var trendColor=trend==="up"?"#2E7D32":trend==="down"?"#C62828":"#6B7280";
-  var body='<div style="margin-bottom:16px"><div style="display:flex;align-items:center;gap:12px;margin-bottom:8px"><span style="font-size:13px;font-weight:600;color:'+trendColor+'">'+trendLabel+'</span><span style="font-size:12px;color:var(--muted)">&#128336; '+weeksAt+' weeks at '+status+'</span></div>';
-  body+='<div style="display:flex;align-items:flex-end;gap:6px;height:80px;padding:8px 0;border-bottom:1px solid var(--border)">';
-  for(var i=0;i<history.length;i++){
-    var h=history[i],ht=Math.max(8,Math.round((h.score/100)*72)),col=progColor(h.score),isLast=i===history.length-1;
-    body+='<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="font-size:9px;color:var(--muted);font-family:monospace">'+h.score+'%</div><div style="width:100%;height:'+ht+'px;background:'+col+';border-radius:4px 4px 0 0;opacity:'+(isLast?1:.7)+'"></div></div>';
+  var history=d["ScoreHistory"]||[];
+  if(history.length>1){
+    promptData+="\nSCORE HISTORY: "+history.map(function(h){return "Wk"+h.week+":"+h.score;}).join(", ")+"\n";
+    promptData+="Trend: "+trend+"\n";
   }
-  body+='</div><div style="display:flex;gap:6px;padding:4px 0">';
-  for(var i=0;i<history.length;i++) body+='<div style="flex:1;text-align:center;font-size:9px;color:var(--muted);font-family:monospace">Wk'+(i+1)+'</div>';
-  body+='</div></div>';
-  body+='<div style="margin-top:4px"><div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Dimension breakdown</div>';
-  var dims=[{lbl:"Milestones",key:"MilestoneScore",color:"#1565C0",weight:"35%"},{lbl:"Deliverables",key:"DeliverableScore",color:"#1B5E20",weight:"20%"},{lbl:"Dependencies",key:"DependencyScore",color:"#4A235A",weight:"15%"},{lbl:"Metrics",key:"MetricsScore",color:"#1A5276",weight:"15%"},{lbl:"Budget",key:"BudgetScore",color:"#1E5631",weight:"15%"}];
-  dims.forEach(function(dim){
-    var score=d[dim.key]||0;
-    body+='<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><span style="color:var(--text);font-weight:500">'+dim.lbl+'</span><span style="font-weight:700;color:'+progColor(score)+';font-family:monospace">'+score+'%</span></div><div style="height:6px;background:#EEF0F2;border-radius:99px;overflow:hidden"><div style="height:100%;width:'+score+'%;background:'+progColor(score)+';border-radius:99px"></div></div></div>';
-  });
-  body+='</div>';
-  document.getElementById("pan-init").textContent=d["Initiative"];
-  document.getElementById("pan-title").textContent="Score history & breakdown";
-  document.getElementById("pan-sub").textContent="Program week "+wk+" of "+getWeeks(d["Initiative"]);
-  document.getElementById("pan-body").innerHTML=body;
-  document.getElementById("pov").classList.add("open");
-}
 
-function cv(val,type,iname,cls){
-  var key="k"+(_CRi++);
-  _CR[key]={type:type,iname:iname};
-  return '<span class="stat-val ck'+(cls?" "+cls:"")+'" id="cv-'+key+'">'+val+'</span>';
-}
-function nv(val,cls){return '<span class="stat-val'+(cls?" "+cls:"")+'">'+val+'</span>';}
+  var systemPrompt="You are a PMO analyst reviewing an OrbitNext 2.0 initiative tracker for InApp, an IT services company targeting 25M to 50M USD revenue growth. Your role is to give a concise, contextual explanation of why an initiative has its current score — written for a CEO and leadership team, not a technical audience. Be direct, specific, and use the actual milestone names and metric names from the data. Do not explain the scoring formula. Do not say things like 'based on the data'. Write 3-4 sentences maximum. Focus on what is actually happening — what is done, what is stuck, what is missing, and what the risk is if nothing changes.";
 
-function hbadge(label,status,color){
-  var el=document.createElement("span");
-  el.className="hbadge";
-  el.style.cssText="background:"+color+"22;color:"+color+";border-color:"+color+"44";
-  el.setAttribute("data-s",status);
-  el.onclick=function(){showRag(this.getAttribute("data-s"));};
-  el.innerHTML='<span class="hbd" style="background:'+color+'"></span>'+label;
-  return el.outerHTML;
-}
+  var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwgkS45kGFl1s-8z-W2nFdO4YQYEE-I3DbM2XbZ5G4sQUsA6uJaxu3X6GNTg5LZJmBvWg/exec";
 
-function sparkline(history,status){
-  var html='<div class="spark-section"><div class="sparkline-wrap">';
-  for(var i=0;i<history.length;i++){
-    var h=history[i],ht=Math.max(4,Math.round((h.score/100)*30)),col=progColor(h.score);
-    html+='<div class="spark-bar" style="height:'+ht+'px;background:'+col+';opacity:'+(i===history.length-1?1:.7)+'" title="Wk'+(i+1)+': '+h.score+'%"></div>';
-  }
-  html+='</div><div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted);padding:0 2px;margin-top:2px"><span>Wk1</span><span>Now</span></div></div>';
-  return html;
-}
+  var whyUrl = APPS_SCRIPT_URL + "?serve=why&prompt=" + encodeURIComponent(promptData);
 
-function trendArrow(trend){
-  if(trend==="up") return '<span class="trend-up"><i class="ti ti-trending-up"></i> Improving</span>';
-  if(trend==="down") return '<span class="trend-down"><i class="ti ti-trending-down"></i> Declining</span>';
-  return '<span class="trend-stable"><i class="ti ti-minus"></i> Stable</span>';
-}
+  fetch(whyUrl, { redirect: "follow" })
+  .then(function(r){ return r.json(); })
+  .then(function(r){
+    var text = r.text || "Unable to generate analysis.";
 
-function scoreRing(score,color,iid){
-  var r=28,circ=2*Math.PI*r,dash=circ*(score/100),gap=circ-dash;
-  return '<div class="score-ring" id="cv-ring-'+iid+'" style="cursor:pointer" title="Click for score breakdown"><svg width="64" height="64" viewBox="0 0 64 64"><circle cx="32" cy="32" r="'+r+'" fill="none" stroke="#EEF0F2" stroke-width="5"/><circle cx="32" cy="32" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="5" stroke-dasharray="'+dash+' '+gap+'" stroke-linecap="round"/></svg><div class="score-ring-val"><div class="score-num">'+score+'%</div><div class="score-label" style="text-decoration:underline dotted">Score</div></div></div>';
-}
+    // Build signals list
+    var signals=[];
+    if(msDl.length) msDl.forEach(function(m){signals.push({label:m.name,sub:"Milestone — delayed"+(m.notes?" · "+m.notes:""),color:"#C62828"});});
+    if(depsBlocked.length) depsBlocked.forEach(function(dep){signals.push({label:dep.name,sub:"Dependency blocked · Provider: "+dep.provider,color:"#B71C1C"});});
+    if(delivsDl.length) delivsDl.forEach(function(dl){signals.push({label:dl.name,sub:"Deliverable delayed",color:"#E65100"});});
+    if(metMissing.length) metMissing.forEach(function(m){signals.push({label:m.name,sub:"Metric — no actual entered",color:"#9b9fad"});});
 
-// ═══════════════════════════════════════════════════════════════════════════
-// LEADERSHIP PULSE — 3 sections
-// ═══════════════════════════════════════════════════════════════════════════
-
-function parseDate(str){
-  if(!str) return null;
-  str=(str+"").trim();
-  var m=str.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if(m) return new Date(+m[1],+m[2]-1,+m[3]);
-  m=str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
-  if(m) return new Date(+m[3],+m[2]-1,+m[1]);
-  var d=new Date(str);
-  if(!isNaN(d)) return d;
-  return null;
-}
-
-function renderLeadershipPulse(data){
-  if(!data||!data.length){document.getElementById("leadership-pulse").style.display="none";return;}
-  document.getElementById("leadership-pulse").style.display="block";
-  renderTrend(data);
-  renderDelayed(data);
-  renderUpcoming(data);
-}
-
-function renderTrend(data){
-  var maxWeeks=0;
-  data.forEach(function(d){var h=d["ScoreHistory"]||[];if(h.length>maxWeeks)maxWeeks=h.length;});
-  if(maxWeeks===0){
-    document.getElementById("trend-section").innerHTML='<div style="color:var(--muted);font-size:13px;font-style:italic">No historical score data yet. Run the Apps Script to populate weekly scores.</div>';
-    return;
-  }
-  var weekAvgs=[];
-  for(var w=0;w<maxWeeks;w++){
-    var sum=0,cnt=0;
-    data.forEach(function(d){var h=d["ScoreHistory"]||[];if(h[w]&&h[w].score!=null){sum+=h[w].score;cnt++;}});
-    weekAvgs.push(cnt?Math.round(sum/cnt):null);
-  }
-  var va=weekAvgs.filter(function(v){return v!==null;});
-  var la=va.length?va[va.length-1]:0,pa=va.length>1?va[va.length-2]:la,delta=la-pa;
-  var ds=(delta>=0?"+":"")+delta+"%",dc=delta>0?"#2E7D32":delta<0?"#C62828":"#6B7280";
-  var bH=60;
-  var html='<div style="display:flex;align-items:flex-end;gap:8px;height:'+(bH+44)+'px;padding-bottom:28px">';
-  weekAvgs.forEach(function(avg,i){
-    var s=avg!==null?avg:0,ht=s>0?Math.max(6,Math.round((s/100)*bH)):4,col=avg!==null?progColor(s):"#EEF0F2",isL=i===weekAvgs.length-1;
-    html+='<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;justify-content:flex-end">';
-    if(avg!==null) html+='<div style="font-size:10px;color:'+(isL?"var(--navy)":"var(--muted)")+';font-family:monospace;font-weight:'+(isL?"700":"400")+'">'+s+'%</div>';
-    html+='<div style="width:100%;height:'+ht+'px;background:'+col+';border-radius:4px 4px 0 0;opacity:'+(isL?1:.65)+'" title="Wk'+(i+1)+': '+(avg!==null?s+"%":"no data")+'"></div>';
-    html+='<div style="font-size:9px;color:var(--muted);font-family:monospace">Wk'+(i+1)+'</div></div>';
-  });
-  html+='</div>';
-  html+='<div style="display:flex;align-items:center;gap:24px;padding-top:12px;border-top:1px solid var(--border);flex-wrap:wrap">';
-  html+='<div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px">Current avg score</div><div style="font-size:22px;font-weight:700;color:'+progColor(la)+';font-family:monospace">'+la+'%</div></div>';
-  html+='<div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px">vs last week</div><div style="font-size:18px;font-weight:700;color:'+dc+';font-family:monospace">'+ds+'</div></div>';
-  html+='<div style="margin-left:auto;display:flex;flex-wrap:wrap;gap:6px;align-items:center">';
-  data.forEach(function(d){
-    var score=d["Overall Score"]||0,col=progColor(score);
-    var initShort=(d["Initiative"]||"").replace(/.*?[-\u2013]\s*/,"").replace(/\s+&.*/,"").trim();
-    if(initShort.length>12) initShort=initShort.substring(0,12)+"\u2026";
-    html+='<div style="display:flex;align-items:center;gap:5px;background:#f7f8fa;border:1px solid var(--border);border-radius:8px;padding:5px 10px">';
-    html+='<div style="width:7px;height:7px;border-radius:50%;background:'+col+'"></div>';
-    html+='<span style="font-size:11px;color:var(--navy);font-weight:500">'+initShort+'</span>';
-    html+='<span style="font-size:11px;color:'+col+';font-family:monospace;font-weight:600">'+score+'%</span></div>';
-  });
-  html+='</div></div>';
-  document.getElementById("trend-section").innerHTML=html;
-}
-
-function renderDelayed(data){
-  var rows=[];
-  data.forEach(function(d){
-    var iname=d["Initiative"]||"";
-    var initShort=iname.replace(/.*?[-\u2013]\s*/,"").trim();
-    if(initShort.length>14) initShort=initShort.substring(0,14)+"\u2026";
-    (d["_milestones"]||[]).filter(function(x){return x.status==="Delayed";}).forEach(function(ms){
-      rows.push({type:"milestone",init:initShort,name:ms.name,detail:"End: "+ms.end+(ms.priority?" \u00b7 "+ms.priority+" priority":""),dotColor:"#C62828"});
-    });
-    (d["_deps"]||[]).filter(function(x){return x.status==="Blocked";}).forEach(function(dep){
-      rows.push({type:"dependency",init:initShort,name:dep.name,detail:"Provider: "+(dep.provider||"?")+"\u00b7 "+dep.priority+" priority",dotColor:"#B71C1C"});
-    });
-    (d["_deliverables"]||[]).filter(function(x){return x.status==="Delayed";}).forEach(function(dl){
-      rows.push({type:"deliverable",init:initShort,name:dl.name,detail:"Target: "+(dl.targetDate||"?"),dotColor:"#E65100"});
-    });
-  });
-  var badge=document.getElementById("delayed-count-badge");
-  if(badge) badge.textContent=rows.length+" item"+(rows.length!==1?"s":"")+" flagged";
-  if(!rows.length){
-    document.getElementById("delayed-section").innerHTML='<div style="display:flex;align-items:center;gap:10px;color:#2E7D32"><i class="ti ti-circle-check" style="font-size:18px"></i><span style="font-size:13px;font-weight:500">Nothing delayed or blocked right now. All clear.</span></div>';
-    return;
-  }
-  var tL={milestone:"Delayed milestones",dependency:"Blocked dependencies",deliverable:"Delayed deliverables"};
-  var tI={milestone:"ti-flag-2",dependency:"ti-link",deliverable:"ti-package"};
-  var tC={milestone:"#C62828",dependency:"#B71C1C",deliverable:"#E65100"};
-  var groups={milestone:[],dependency:[],deliverable:[]};
-  rows.forEach(function(r){groups[r.type].push(r);});
-  var html='<div style="display:flex;flex-direction:column;gap:0">';
-  ["milestone","dependency","deliverable"].forEach(function(t){
-    if(!groups[t].length) return;
-    html+='<div style="margin-bottom:16px">';
-    html+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><i class="ti '+tI[t]+'" style="color:'+tC[t]+';font-size:13px"></i><span style="font-size:10px;font-weight:700;color:'+tC[t]+';text-transform:uppercase;letter-spacing:.08em">'+tL[t]+' ('+groups[t].length+')</span></div>';
-    html+='<div style="border:1px solid #FFCDD2;border-radius:10px;overflow:hidden">';
-    groups[t].forEach(function(r,i){
-      html+='<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:'+(i%2===0?"#fff":"#FFF5F5")+';border-bottom:'+(i<groups[t].length-1?"1px solid #FFCDD2":"none")+'">';
-      html+='<div style="width:6px;height:6px;border-radius:50%;background:'+r.dotColor+';flex-shrink:0"></div>';
-      html+='<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+r.name+'</div><div style="font-size:11px;color:var(--muted);margin-top:2px">'+r.detail+'</div></div>';
-      html+='<div style="font-size:10px;font-weight:600;color:#fff;background:'+r.dotColor+';padding:2px 8px;border-radius:99px;white-space:nowrap;flex-shrink:0">'+r.init+'</div>';
+    var html='<div class="ai-why-text">'+escHtml(text)+'</div>';
+    if(signals.length){
+      html+='<div class="ai-why-signals"><div class="ai-why-signal-title">Flagged items</div>';
+      signals.forEach(function(s){
+        html+='<div class="ai-signal-row"><div class="ai-signal-dot" style="background:'+s.color+'"></div>'
+             +'<div><div style="font-size:13px;font-weight:600;color:var(--navy)">'+escHtml(s.label)+'</div>'
+             +'<div style="font-size:12px;color:var(--muted)">'+escHtml(s.sub)+'</div></div></div>';
+      });
       html+='</div>';
-    });
-    html+='</div></div>';
+    }
+    document.getElementById("ai-pop-body").innerHTML=html;
+  })
+  .catch(function(err){
+    document.getElementById("ai-pop-body").innerHTML='<div style="color:#C62828;font-size:13px">Could not load analysis: '+err.message+'</div>';
   });
-  html+='</div>';
-  document.getElementById("delayed-section").innerHTML=html;
 }
+function closeAiPopup(){document.getElementById("ai-overlay").classList.remove("open");}
+function escHtml(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 
-function renderUpcoming(data){
-  var now=new Date(); now.setHours(0,0,0,0);
-  var cutoff=new Date(now.getTime()+14*24*60*60*1000);
-  var rows=[];
-  data.forEach(function(d){
-    var iname=d["Initiative"]||"";
-    var initShort=iname.replace(/.*?[-\u2013]\s*/,"").trim();
-    if(initShort.length>14) initShort=initShort.substring(0,14)+"\u2026";
-    (d["_milestones"]||[]).forEach(function(ms){
-      if(ms.status==="Completed"||ms.status==="Delayed") return;
-      var dt=parseDate(ms.end); if(!dt) return;
-      if(dt>=now&&dt<=cutoff) rows.push({name:ms.name,init:initShort,date:dt,status:ms.status,priority:ms.priority||""});
-    });
+// ── POPUP ────────────────────────────────────────────────────
+function openPopup(trackName,title,sub,rows){
+  document.getElementById("pop-track").textContent=trackName;
+  document.getElementById("pop-title").textContent=title;
+  document.getElementById("pop-sub").textContent=sub;
+  var html="";
+  rows.forEach(function(r){
+    var dot=SDOT[r.status]||"#9b9fad";
+    var cfg=STATUS_CFG[r.status]||{bg:dot+"22",border:dot+"44",text:dot};
+    html+='<div class="popup-row"><div class="popup-dot" style="background:'+dot+'"></div>'
+         +'<div style="flex:1"><div class="popup-name">'+escHtml(r.name)+'</div>'
+         +'<div class="popup-meta">'+escHtml(r.meta)+'</div>'
+         +(r.notes?'<div class="popup-notes"><i class="ti ti-notes" style="font-size:11px;margin-right:4px"></i>'+escHtml(r.notes)+'</div>':'')
+         +'</div>'
+         +'<span class="popup-st" style="background:'+cfg.bg+';color:'+cfg.text+';border-color:'+cfg.border+'">'+r.status+'</span></div>';
   });
-  rows.sort(function(a,b){return a.date-b.date;});
-  var badge=document.getElementById("upcoming-count-badge");
-  if(badge) badge.textContent=rows.length+" milestone"+(rows.length!==1?"s":"")+" due in next 2 weeks";
-  if(!rows.length){
-    document.getElementById("upcoming-section").innerHTML='<div style="font-size:13px;color:var(--muted);font-style:italic">No milestones due in the next 2 weeks.</div>';
-    return;
-  }
-  var sDot={"In Progress":"#1565C0","Not Started":"#9b9fad","On Hold":"#F9A825"};
-  var months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  var html='<div style="border:1px solid #C8E6C9;border-radius:10px;overflow:hidden">';
-  rows.forEach(function(r,i){
-    var dL=Math.round((r.date-now)/(24*60*60*1000));
-    var urg=dL<=3?"#C62828":dL<=7?"#E65100":"#1565C0";
-    var dot=sDot[r.status]||"#9b9fad";
-    html+='<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:'+(i%2===0?"#fff":"#F1F8F1")+';border-bottom:'+(i<rows.length-1?"1px solid #C8E6C9":"none")+'">';
-    html+='<div style="min-width:52px;text-align:center;background:'+urg+'22;border:1px solid '+urg+'44;border-radius:8px;padding:4px 6px"><div style="font-size:16px;font-weight:700;color:'+urg+';font-family:monospace;line-height:1">'+r.date.getDate()+'</div><div style="font-size:9px;color:'+urg+';text-transform:uppercase">'+months[r.date.getMonth()]+'</div></div>';
-    html+='<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+r.name+'</div>';
-    html+='<div style="display:flex;align-items:center;gap:6px;margin-top:3px"><div style="width:6px;height:6px;border-radius:50%;background:'+dot+'"></div><span style="font-size:11px;color:var(--muted)">'+r.status+(r.priority?" \u00b7 "+r.priority+" priority":"")+'</span></div></div>';
-    html+='<div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0">';
-    html+='<span style="font-size:10px;font-weight:600;color:#fff;background:#2E7D32;padding:2px 8px;border-radius:99px">'+r.init+'</span>';
-    html+='<span style="font-size:10px;color:'+urg+';font-weight:600">'+(dL===0?"Today":dL===1?"Tomorrow":"in "+dL+" days")+'</span>';
-    html+='</div></div>';
-  });
-  html+='</div>';
-  document.getElementById("upcoming-section").innerHTML=html;
+  if(!html) html='<div style="color:var(--muted);font-size:13px;padding:16px 0;text-align:center">No items in this category.</div>';
+  document.getElementById("pop-body").innerHTML=html;
+  document.getElementById("overlay").classList.add("open");
 }
+function closePopup(){document.getElementById("overlay").classList.remove("open");}
 
-// ═══════════════════════════════════════════════════════════════════════════
-// MAIN RENDER
-// ═══════════════════════════════════════════════════════════════════════════
+function showMilestones(dIdx,filter){
+  var d=D[dIdx];if(!d)return;
+  var name=(d["Initiative"]||"").replace(/^I\d+\s*-\s*/,"").trim();
+  var items=(d["_milestones"]||[]).filter(function(m){return m.status===filter;});
+  var rows=items.map(function(m){return{name:m.name,status:m.status,meta:"Start: "+m.start+" → End: "+m.end+(m.priority?" · "+m.priority+" priority":""),notes:m.notes||""};});
+  openPopup(name,filter+" milestones",items.length+" item"+(items.length!==1?"s":""),rows);
+}
+function showDeliverables(dIdx,filter){
+  var d=D[dIdx];if(!d)return;
+  var name=(d["Initiative"]||"").replace(/^I\d+\s*-\s*/,"").trim();
+  var items=(d["_deliverables"]||[]).filter(function(x){return x.status===filter;});
+  var rows=items.map(function(dl){return{name:dl.name,status:dl.status,meta:"Target: "+dl.targetDate+(dl.linked?" · Linked: "+dl.linked:""),notes:dl.notes||""};});
+  openPopup(name,filter+" deliverables",items.length+" item"+(items.length!==1?"s":""),rows);
+}
+function scrollToSection(id){var el=document.getElementById(id);if(el)el.scrollIntoView({behavior:"smooth",block:"start"});}
 
+// ── RENDER ──────────────────────────────────────────────────
 function render(payload){
-  var data=payload.initiatives||[], le=payload.lastEdit||"";
-  D=data; _CR={}; _CRi=0;
-  if(!data||!data.length){
-    document.getElementById("cards").innerHTML='<div class="loading" style="color:var(--red)">No data. Run OrbitNext menu from sheet first.</div>';
-    return;
-  }
-  document.getElementById("ts").textContent=le?"Sheet last edited: "+le:"Not yet edited";
+  var data=payload.initiatives||[];
+  var le=payload.lastEdit||"";
+  D=data;
+  if(!data.length){document.getElementById("main").innerHTML='<div class="loading" style="color:var(--red)">No data. Run OrbitNext PMO menu from the sheet first.</div>';return;}
 
-  var totMs=0,dnMs=0,totDel=0,totHP=0;
+  // Format timestamp in IST
+  document.getElementById("ts").textContent=le?formatIST(le):"—";
+
   var wk=weekNum();
-  document.getElementById("irows").innerHTML="";
+  var months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var now=new Date();now.setHours(0,0,0,0);
+  var cutoff=new Date(now.getTime()+14*24*60*60*1000);
 
+  var totalDelayed=0;
   data.forEach(function(d){
-    var status=d["Overall Status"]||"Needs Attention";
-    var score=d["Overall Score"]||0;
-    var m=sm(status);
-    var iname=d["Initiative"]||"Initiative";
-    var iid=iname.replace(/[^a-zA-Z0-9]/g,"_");
-    var tot=d["Milestones Total"]||0,dn=d["Milestones Done"]||0,ip=d["Milestones In Progress"]||0,dl=d["Milestones Delayed"]||0;
-    var weeks=getWeeks(iname);
-    var trend=d["Trend"]||"stable";
-    var weeksAt=d["WeeksAtStatus"]||1;
-    totMs+=tot; dnMs+=dn; totDel+=dl; totHP+=(d["Deps High Pending"]||0);
-
-    var row=document.createElement("div");
-    row.className="irow";
-    row.onclick=(function(id){return function(){scrollTo(id);};})(iid);
-    row.innerHTML=
-      '<div class="irow-left"><div class="irow-indicator" style="background:'+m.dot+'"></div><div><div class="irow-name">'+iname+'</div><div class="irow-week">Wk '+wk+' of '+weeks+'</div></div></div>'+
-      '<div class="irow-mid"><div class="irow-bar-wrap"><div class="irow-bar"><div class="irow-bar-fill" style="width:'+score+'%;background:'+progColor(score)+'"></div></div><span class="irow-pct">'+score+'%</span></div>'+
-      '<div class="irow-meta"><span><i class="ti ti-flag-2"></i>'+dn+'/'+tot+' done</span><span><i class="ti ti-alert-triangle"></i><span class="'+(dl>0?"bad-count":"")+'">'+dl+' delayed</span></span></div></div>'+
-      '<div class="irow-right"><span class="status-pill '+m.pill+'" data-s="'+status+'" onclick="event.stopPropagation();showRag(this.dataset.s)">'+m.lbl+'</span>'+
-      '<div class="trend-tag">'+trendArrow(trend)+'<span class="dur-pill" style="cursor:pointer" id="cv-spark-'+iid+'">&#128336; '+weeksAt+' wks</span></div></div>';
-    document.getElementById("irows").appendChild(row);
+    totalDelayed+=(d["_milestones"]||[]).filter(function(m){return m.status==="Delayed";}).length;
+    totalDelayed+=(d["_deps"]||[]).filter(function(x){return x.status==="Blocked";}).length;
+    totalDelayed+=(d["_deliverables"]||[]).filter(function(x){return x.status==="Delayed";}).length;
   });
 
-  document.getElementById("ov-prog-label").textContent="Week "+wk+" of program";
-
-  var avgScore=D.length>0?Math.round(D.reduce(function(a,d){return a+(d["Overall Score"]||0);},0)/D.length):0;
-  var delKey="k"+(_CRi++); _CR[delKey]={type:"all-del-ms",iname:null};
-  var hiKey="k"+(_CRi++); _CR[hiKey]={type:"all-hi-dep",iname:null};
-  document.getElementById("mstrip").innerHTML=
-    '<div class="mcell"><div class="mlbl">Avg overall score</div><div class="mval">'+avgScore+'%</div><div class="msub">Across all '+data.length+' initiatives</div></div>'+
-    '<div class="mcell"><div class="mlbl">Total milestones delayed</div><div class="mval"><span id="cv-'+delKey+'" class="stat-val'+(totDel>0?" ck d":"")+'">'+totDel+'</span></div><div class="msub">'+(totDel>0?'<span class="bad">Auto-flagged</span>':'<span class="good">None delayed</span>')+'</div></div>'+
-    '<div class="mcell"><div class="mlbl">High priority deps pending</div><div class="mval"><span id="cv-'+hiKey+'" class="stat-val'+(totHP>0?" ck w":"")+'">'+totHP+'</span></div><div class="msub">'+(totHP>0?'<span class="bad">Needs resolution</span>':'<span class="good">All clear</span>')+'</div></div>';
-
-  document.getElementById("ocard").style.display="block";
-  renderLeadershipPulse(data);
+  var worstStatus="On Track";
+  ["Off Track","At Risk","Needs Attention","Minor Concerns"].forEach(function(s){if(worstStatus==="On Track"&&data.some(function(d){return d["Overall Status"]===s;}))worstStatus=s;});
 
   var html="";
+
+  // ── LEGEND ───────────────────────────────────────────────
+  html+='<div class="legend-card">';
+  html+='<div class="legend-title"><i class="ti ti-info-circle" style="color:var(--red);font-size:14px"></i>How to read this dashboard</div>';
+  html+='<div class="legend-grid">';
+
+  // Status
+  html+='<div><div class="legend-block-title">Status</div>';
+  [["#2E7D32","On Track","≥ 85"],["#F9A825","Minor Concerns","70–84"],["#FB8C00","Needs Attention","50–69"],["#EF5350","At Risk","30–49"],["#B71C1C","Off Track","< 30"]].forEach(function(s){
+    html+='<div class="legend-row"><div class="legend-dot" style="background:'+s[0]+'"></div><span class="legend-label">'+s[1]+'</span><span class="legend-range">'+s[2]+'%</span></div>';
+  });
+  html+='</div>';
+
+  // Scoring
+  html+='<div><div class="legend-block-title">How scores work</div>';
+  html+='<div class="legend-explain">';
+  html+='<b>Base score</b> = Milestones (70%) + Metrics (30%)<br>';
+  html+='<b>Final score</b> = Base ± adjustments<br><br>';
+  html+='Adjustments nudge the base score up or down:<br>';
+  html+='&nbsp;• Deliverables: ±5 pts<br>';
+  html+='&nbsp;• Dependencies: ±7 pts<br>';
+  html+='&nbsp;• Budget: ±3 pts<br><br>';
+  html+='<b>Click the score ring</b> on any track for an AI-generated explanation of why it is where it is.';
+  html+='</div></div>';
+
+  // Trend
+  html+='<div><div class="legend-block-title">Trend & interaction</div>';
+  html+='<div class="legend-explain">';
+  html+='<b>Improving</b> — score up &gt;5% vs last week<br>';
+  html+='<b>Stable</b> — within ±5% of last week<br>';
+  html+='<b>Declining</b> — score down &gt;5% vs last week<br><br>';
+  html+='Milestone and deliverable counts are <b>clickable</b> — tap any count to see the full list with dates, priority and notes.<br><br>';
+  html+='<b>Delayed &amp; blocked</b> count at the top scrolls to the flagged items.';
+  html+='</div></div>';
+
+  html+='</div></div>';
+
+  // ── TOP STRIP ─────────────────────────────────────────────
+  html+='<div class="top-strip">';
+  html+='<div class="strip-cell"><div class="strip-lbl">Program week</div><div class="strip-val" style="color:var(--navy)">'+wk+' <span style="font-size:16px;color:var(--muted)">/ '+TOTAL_WEEKS+'</span></div><div class="strip-sub">Started 10 Apr 2026</div></div>';
+  html+='<div class="strip-cell clickable" onclick="scrollToSection(\'delayed-section\')" title="Click to jump to delayed items"><div class="strip-lbl">Delayed &amp; blocked <i class="ti ti-arrow-down" style="font-size:11px"></i></div><div class="strip-val" style="color:'+(totalDelayed>0?"#C62828":"#2E7D32")+'">'+totalDelayed+'</div><div class="strip-sub">'+(totalDelayed>0?"items need attention":"all clear")+'</div></div>';
+  html+='<div class="strip-cell"><div class="strip-lbl">Program health</div><div style="margin-top:6px">'+pillHtml(worstStatus)+'</div><div class="strip-sub" style="margin-top:8px">based on lowest track</div></div>';
+  html+='</div>';
+
+  // ── TRACK SCORES: WEEK BY WEEK BAR CHARTS ─────────────────
+  html+='<div class="sec-card">';
+  html+='<div class="sec-hdr" style="background:linear-gradient(135deg,#1A1D2E,#2B2D42)">'
+       +'<div class="sec-hdr-l"><i class="ti ti-chart-bar" style="color:rgba(255,255,255,.5);font-size:16px"></i>'
+       +'<span class="sec-hdr-title" style="color:rgba(255,255,255,.9)">Track scores — week by week</span></div>'
+       +'<span class="sec-hdr-badge" style="color:rgba(255,255,255,.5)">Last '+wk+' week'+(wk!==1?"s":"")+'</span></div>';
+  html+='<div class="sec-body"><div class="trend-grid">';
+
   data.forEach(function(d){
+    var history=d["ScoreHistory"]||[];
+    var name=(d["Initiative"]||"").replace(/^I\d+\s*-\s*/,"").trim();
+    var score=d["Overall Score"]||0;
+    var trend=d["Trend"]||"stable";
+    var currentColor=progColor(score);
+
+    html+='<div class="trend-track">';
+    html+='<div class="trend-track-hdr"><span class="trend-track-name">'+name+'</span>'+trendArrow(trend)+'</div>';
+
+    if(!history.length){
+      html+='<div class="no-trend">No history yet — scores will appear after the first weekly run.</div>';
+    } else {
+      // Fill up to wk bars (pad with nulls for missing weeks)
+      var byWeek={};
+      history.forEach(function(h){byWeek[h.week]=h.score;});
+      var bars=[];
+      for(var w=1;w<=wk;w++){bars.push({week:w,score:byWeek[w]!==undefined?byWeek[w]:null});}
+
+      html+='<div class="trend-bars-wrap">';
+      bars.forEach(function(b,i){
+        var s=b.score;
+        var ht=s!==null?Math.max(5,Math.round((s/100)*72)):5;
+        var col=s!==null?progColor(s):"#EEF0F2";
+        var isL=(i===bars.length-1);
+        html+='<div class="t-col">';
+        if(s!==null) html+='<div class="t-bar-val" style="color:'+(isL?"var(--navy)":"var(--muted)")+';font-weight:'+(isL?"700":"400")+'">'+s+'</div>';
+        html+='<div class="t-bar" style="height:'+ht+'px;background:'+col+';opacity:'+(isL?1:.65)+'" title="Week '+b.week+': '+(s!==null?s:"no data")+'"></div>';
+        html+='<div class="t-bar-lbl">W'+b.week+'</div>';
+        html+='</div>';
+      });
+      html+='</div>';
+
+      // Current score callout
+      html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">'
+           +'<span style="font-size:12px;color:var(--muted)">Current score</span>'
+           +'<span style="font-size:18px;font-weight:700;font-family:\'DM Mono\',monospace;color:'+currentColor+'">'+score+'%</span>'
+           +'</div>';
+    }
+    html+='</div>';
+  });
+
+  html+='</div></div></div>';
+
+  // ── WHAT HAS DELAYED ─────────────────────────────────────
+  var delRows={milestone:[],dependency:[],deliverable:[]};
+  data.forEach(function(d){
+    var nm=(d["Initiative"]||"").replace(/^I\d+\s*-\s*/,"").trim();
+    (d["_milestones"]||[]).filter(function(x){return x.status==="Delayed";}).forEach(function(m){delRows.milestone.push({name:m.name,detail:"End: "+m.end+(m.priority?" · "+m.priority+" priority":""),init:nm,dot:"#C62828"});});
+    (d["_deps"]||[]).filter(function(x){return x.status==="Blocked";}).forEach(function(dep){delRows.dependency.push({name:dep.name,detail:"Provider: "+(dep.provider||"?")+" · "+dep.priority+" priority",init:nm,dot:"#B71C1C"});});
+    (d["_deliverables"]||[]).filter(function(x){return x.status==="Delayed";}).forEach(function(dl){delRows.deliverable.push({name:dl.name,detail:"Target: "+(dl.targetDate||"?"),init:nm,dot:"#E65100"});});
+  });
+  var totalDel=delRows.milestone.length+delRows.dependency.length+delRows.deliverable.length;
+
+  html+='<div class="sec-card" id="delayed-section">';
+  html+='<div class="sec-hdr" style="background:linear-gradient(135deg,#4A0000,#7A1518)">'
+       +'<div class="sec-hdr-l"><i class="ti ti-alert-triangle" style="color:rgba(255,255,255,.5);font-size:16px"></i><span class="sec-hdr-title" style="color:rgba(255,255,255,.9)">What has delayed</span></div>'
+       +'<span class="sec-hdr-badge" style="color:rgba(255,255,255,.5)">'+totalDel+' item'+(totalDel!==1?"s":"")+'</span></div>';
+  html+='<div class="sec-body">';
+  if(!totalDel){
+    html+='<div class="all-clear"><i class="ti ti-circle-check" style="font-size:20px"></i>Nothing delayed or blocked. All clear.</div>';
+  } else {
+    var tConf=[{key:"milestone",label:"Delayed milestones",icon:"ti-flag-2",color:"#C62828",bdr:"#FFCDD2",stripe:"#FFF5F5"},{key:"dependency",label:"Blocked dependencies",icon:"ti-link",color:"#B71C1C",bdr:"#FFCDD2",stripe:"#FFF5F5"},{key:"deliverable",label:"Delayed deliverables",icon:"ti-package",color:"#E65100",bdr:"#FFE0B2",stripe:"#FFF8F0"}];
+    tConf.forEach(function(tc){
+      var rows=delRows[tc.key];if(!rows.length)return;
+      html+='<div class="del-group"><div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><i class="ti '+tc.icon+'" style="color:'+tc.color+';font-size:14px"></i><span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:'+tc.color+'">'+tc.label+' ('+rows.length+')</span></div>';
+      html+='<div class="del-list" style="border:1px solid '+tc.bdr+';border-radius:10px;overflow:hidden">';
+      rows.forEach(function(r,i){
+        html+='<div class="del-row" style="background:'+(i%2===0?"#fff":tc.stripe)+';border-bottom-color:'+tc.bdr+'">'
+             +'<div class="del-dot" style="background:'+r.dot+'"></div>'
+             +'<div style="flex:1;min-width:0"><div class="del-name-text">'+r.name+'</div><div class="del-detail">'+r.detail+'</div></div>'
+             +'<div class="init-tag" style="background:'+r.dot+'">'+r.init+'</div></div>';
+      });
+      html+='</div></div>';
+    });
+  }
+  html+='</div></div>';
+
+  // ── UPCOMING ─────────────────────────────────────────────
+  var upcoming=[];
+  data.forEach(function(d){
+    var nm=(d["Initiative"]||"").replace(/^I\d+\s*-\s*/,"").trim();
+    (d["_milestones"]||[]).forEach(function(m){
+      if(m.status==="Completed"||m.status==="Delayed")return;
+      var dt=parseDate(m.end);if(!dt)return;
+      if(dt>=now&&dt<=cutoff)upcoming.push({name:m.name,init:nm,date:dt,status:m.status,priority:m.priority||""});
+    });
+  });
+  upcoming.sort(function(a,b){return a.date-b.date;});
+
+  html+='<div class="sec-card">';
+  html+='<div class="sec-hdr" style="background:linear-gradient(135deg,#1B5E20,#2E7D32)">'
+       +'<div class="sec-hdr-l"><i class="ti ti-calendar-event" style="color:rgba(255,255,255,.5);font-size:16px"></i><span class="sec-hdr-title" style="color:rgba(255,255,255,.9)">What\'s coming up — next 2 weeks</span></div>'
+       +'<span class="sec-hdr-badge" style="color:rgba(255,255,255,.5)">'+upcoming.length+' milestone'+(upcoming.length!==1?"s":"")+'</span></div>';
+  html+='<div class="sec-body">';
+  if(!upcoming.length){
+    html+='<div style="font-size:13px;color:var(--muted);font-style:italic">No milestones due in the next 2 weeks.</div>';
+  } else {
+    html+='<div class="up-list">';
+    upcoming.forEach(function(r,i){
+      var dL=Math.round((r.date-now)/86400000);
+      var urg=dL<=3?"#C62828":dL<=7?"#E65100":"#1565C0";
+      var dot=SDOT[r.status]||"#9b9fad";
+      html+='<div class="up-row" style="background:'+(i%2===0?"#fff":"#F1F8F1")+'">'
+           +'<div class="up-date" style="background:'+urg+'18;border-color:'+urg+'44;color:'+urg+'"><div class="up-date-d">'+r.date.getDate()+'</div><div class="up-date-m">'+months[r.date.getMonth()]+'</div></div>'
+           +'<div style="flex:1;min-width:0"><div class="up-name">'+r.name+'</div><div class="up-meta"><div style="width:6px;height:6px;border-radius:50%;background:'+dot+'"></div>'+r.status+(r.priority?" · "+r.priority+" priority":"")+'</div></div>'
+           +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">'
+           +'<div class="init-tag" style="background:#2E7D32">'+r.init+'</div>'
+           +'<div class="up-days" style="color:'+urg+'">'+(dL===0?"Today":dL===1?"Tomorrow":"in "+dL+" days")+'</div></div></div>';
+    });
+    html+='</div>';
+  }
+  html+='</div></div>';
+
+  // ── TRACK CARDS ──────────────────────────────────────────
+  html+='<div class="tracks">';
+  data.forEach(function(d,dIdx){
     var status=d["Overall Status"]||"Needs Attention";
     var score=d["Overall Score"]||0;
-    var m=sm(status);
-    var iname=d["Initiative"]||"Initiative";
-    var iid=iname.replace(/[^a-zA-Z0-9]/g,"_");
+    var color=progColor(score);
+    var iname=d["Initiative"]||"";
+    var dispName=iname.replace(/^I\d+\s*-\s*/,"").trim();
+    var owners=d["Owners"]||"—";
+    var mentors=d["Mentors"]||"—";
+    var timeline=d["Timeline"]||"";
     var trend=d["Trend"]||"stable";
     var weeksAt=d["WeeksAtStatus"]||1;
     var history=d["ScoreHistory"]||[];
-    var wk=weekNum(),weeks=getWeeks(iname);
-    var msScore=d["MilestoneScore"]||0,delScore=d["DeliverableScore"]||0,depScore=d["DependencyScore"]||0,metScore=d["MetricsScore"]||0,budScore=d["BudgetScore"]||0;
-    var msT=d["Milestones Total"]||0,msD=d["Milestones Done"]||0,msI=d["Milestones In Progress"]||0,msDl=d["Milestones Delayed"]||0,msH=d["Milestones On Hold"]||0;
-    var msPct=msT>0?Math.round(msD/msT*100):0;
-    var dlT=d["Deliverables Total"]||0,dlD=d["Deliverables Done"]||0,dlDl=d["Deliverables Delayed"]||0;
-    var dlPct=dlT>0?Math.round(dlD/dlT*100):0;
-    var dT=d["Deps Total"]||0,dR=d["Deps Resolved"]||0,dB=d["Deps Blocked"]||0,dH=d["Deps High Pending"]||0,depH=d["Dep Health"]||"";
-    var depColor=(depH==="Blocked - escalate"||dB>0)?"#C62828":dH>2?"#FB8C00":"#2E7D32";
-    var mCt=d["Metrics Count"]||0,mAc=d["Metrics With Actuals"]||0;
-    var mEntPct=mCt>0?Math.round(mAc/mCt*100):0;
-    var appr=d["Total Approved"]||0,spent=d["Total Spent"]||0,exp=d["Total Exposure"]||0,vp=d["Variance Pct"]||0,cH=d["Cost Health"]||"";
-    var bPct=appr>0?Math.round(exp/appr*100):0;
-    var budColor=Math.abs(vp)>15?"#C62828":Math.abs(vp)>10?"#FB8C00":Math.abs(vp)>5?"#F9A825":"#2E7D32";
-    var alertHtml="";
-    var alertMap={"Off Track":"#FCE4E4|#B71C1C|Immediate escalation required.","At Risk":"#FFEBEE|#C62828|Major risk emerging — leadership should be actively involved.","Needs Attention":"#FFF3E0|#BF5000|Action required — owner must create a recovery plan before next review."};
-    if(alertMap[status]){var ap=alertMap[status].split("|");alertHtml='<div class="alert" style="background:'+ap[0]+';border-color:'+ap[1]+';color:'+ap[1]+'"><i class="ti ti-alert-triangle"></i>'+ap[2]+'</div>';}
-    var ringColor=progColor(score);
+    var ms=d["_milestones"]||[];
+    var msTotal=ms.length;
+    var msDone=ms.filter(function(m){return m.status==="Completed";}).length;
+    var msIP=ms.filter(function(m){return m.status==="In Progress";}).length;
+    var msHold=ms.filter(function(m){return m.status==="On Hold";}).length;
+    var msDl=ms.filter(function(m){return m.status==="Delayed";}).length;
+    var msNS=ms.filter(function(m){return m.status==="Not Started";}).length;
+    var msPct=msTotal>0?Math.round(msDone/msTotal*100):0;
+    var delivs=d["_deliverables"]||[];
+    var hasDelivs=delivs.length>0;
+    var dlDone=delivs.filter(function(x){return x.status==="Completed";}).length;
+    var dlIP=delivs.filter(function(x){return x.status==="In Progress";}).length;
+    var dlDl=delivs.filter(function(x){return x.status==="Delayed";}).length;
+    var dlNS=delivs.filter(function(x){return x.status==="Not Started";}).length;
+    var metrics=d["_metrics"]||[];
+    var budget=d["_budget"]||[];
 
-    html+='<div class="icard '+m.cls+'" id="card-'+iid+'">';
-    html+='<div class="card-accent" style="background:'+m.dot+'"></div>';
-    html+='<div class="card-top">';
-    html+='<div class="card-top-left"><div class="card-title">'+iname+'</div><div class="card-meta"><span class="card-meta-item"><i class="ti ti-users"></i>'+(d["Owners"]||"?")+'</span><span class="card-meta-item" style="color:#999">&middot;</span><span class="card-meta-item"><i class="ti ti-calendar"></i>Wk '+wk+' of '+weeks+'</span></div></div>';
-    html+='<div class="card-top-right"><div class="score-ring-wrap">'+sparkline(history,status)+scoreRing(score,ringColor,iid)+'</div>';
-    html+='<div class="card-pills"><span class="status-pill '+m.pill+'" data-rs="'+status+'" onclick="showRag(this.getAttribute(String.fromCharCode(100,97,116,97,45,114,115)))">'+m.lbl+'</span>';
-    html+='<span class="status-pill" style="background:#f5f6f8;color:var(--muted);border-color:var(--border);cursor:pointer" id="cv-spark2-'+iid+'">&#128336; '+weeksAt+' wks</span></div></div></div>';
-    if(alertHtml) html+=alertHtml;
-    html+='<div class="card-body">';
-    html+='<div class="card-row card-row-top">';
+    html+='<div class="tcard">';
+    html+='<div class="tcard-accent" style="background:'+color+'"></div>';
 
+    // TOP
+    html+='<div class="tcard-top">';
+    html+='<div><div class="tcard-name">'+dispName+'</div>'
+         +'<div class="tcard-person-row"><i class="ti ti-users"></i><span class="tcard-person-label">Owners</span>'+owners+'</div>'
+         +'<div class="tcard-person-row"><i class="ti ti-user-star"></i><span class="tcard-person-label">Mentors</span>'+mentors+'</div>'
+         +'<div class="tcard-person-row"><i class="ti ti-calendar"></i><span class="tcard-person-label">Timeline</span>'+timeline+' · Week '+wk+'</div>'
+         +'</div>';
+    html+='<div class="tcard-right">';
+    html+=scoreRing(score,color,dIdx);
+    html+='<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">';
+    html+=pillHtml(status);
+    html+='<div style="display:flex;align-items:center;gap:8px">'+trendArrow(trend)+'<span style="font-size:12px;color:var(--muted)">'+weeksAt+' wk'+(weeksAt!==1?"s":"")+'</span></div>';
+    html+=sparkline(history);
+    html+='</div></div></div>';
+
+    // MILESTONES + DELIVERABLES
+    html+='<div class="tcard-body">';
     // Milestones
-    html+='<div class="sec"><div class="sec-hdr">';
-    var msKey="k"+(_CRi++); _CR[msKey]={type:"ms-all",iname:iname};
-    html+='<span class="sec-title" style="color:var(--ms-color)" id="cv-'+msKey+'"><i class="ti ti-flag-2"></i><span>Milestones</span></span>';
-    html+='<span class="sec-badge" style="background:#E3F2FD;color:#1565C0">'+msScore+'%</span></div>';
-    html+='<div class="prog"><div class="prog-row"><span>Completion</span><span>'+msPct+'%</span></div><div class="prog-track"><div class="prog-fill" style="width:'+msPct+'%;background:'+progColor(msScore)+'"></div></div></div>';
-    html+='<div class="stat-grid">';
-    html+='<div class="stat"><span class="stat-lbl">Done</span>'+cv(msD+" / "+msT,"ms-done",iname,"g")+'</div>';
-    html+='<div class="stat"><span class="stat-lbl">In progress</span>'+(msI>0?cv(msI,"ms-ip",iname,""):nv(msI,""))+'</div>';
-    html+='<div class="stat"><span class="stat-lbl">On hold</span>'+(msH>0?cv(msH,"ms-hold",iname,"w"):nv(msH,""))+'</div>';
-    html+='<div class="stat"><span class="stat-lbl">Delayed</span>'+(msDl>0?cv(msDl,"ms-del",iname,"d"):nv(msDl,""))+'</div>';
+    html+='<div class="tcard-section"><div class="tsec-hdr"><span class="tsec-title" style="color:#1565C0"><i class="ti ti-flag-2"></i>Milestones</span><span class="tsec-badge" style="background:#E3F2FD;color:#1565C0">'+msPct+'% done</span></div>';
+    html+='<div class="ms-prog-bar"><div class="ms-prog-fill" style="width:'+msPct+'%;background:'+progColor(d["MilestoneScore"]||0)+'"></div></div>';
+    html+='<div class="ms-counts">';
+    [{l:"Completed",v:msDone,c:"#2E7D32",f:"Completed"},{l:"In Progress",v:msIP,c:"#1565C0",f:"In Progress"},{l:"Not Started",v:msNS,c:"#9b9fad",f:"Not Started"},{l:"On Hold",v:msHold,c:"#F9A825",f:"On Hold"},{l:"Delayed",v:msDl,c:"#C62828",f:"Delayed"}].forEach(function(x){
+      html+='<div class="ms-count-btn" onclick="showMilestones('+dIdx+',\''+x.f+'\')">'
+           +'<div class="ms-count-dot" style="background:'+x.c+'"></div>'
+           +'<span class="ms-count-label">'+x.l+'</span><span class="ms-count-val">'+x.v+'</span></div>';
+    });
     html+='</div></div>';
-
     // Deliverables
-    html+='<div class="sec"><div class="sec-hdr">';
-    var dlKey="k"+(_CRi++); _CR[dlKey]={type:"del-all",iname:iname};
-    html+='<span class="sec-title" style="color:var(--del-color)" id="cv-'+dlKey+'"><i class="ti ti-package"></i><span>Deliverables</span></span>';
-    html+='<span class="sec-badge" style="background:#E8F5E9;color:#1B5E20">'+delScore+'%</span></div>';
-    if(dlT>0){
-      html+='<div class="prog"><div class="prog-row"><span>Completion</span><span>'+dlPct+'%</span></div><div class="prog-track"><div class="prog-fill" style="width:'+dlPct+'%;background:'+progColor(delScore)+'"></div></div></div>';
-      html+='<div class="stat-grid"><div class="stat"><span class="stat-lbl">Total</span>'+cv(dlT,"del-all",iname,"")+'</div><div class="stat"><span class="stat-lbl">Completed</span>'+(dlD>0?cv(dlD,"del-done",iname,"g"):nv(dlD,"g"))+'</div><div class="stat"><span class="stat-lbl">Delayed</span>'+(dlDl>0?cv(dlDl,"del-del",iname,"d"):nv(dlDl,""))+'</div></div>';
+    if(hasDelivs){
+      html+='<div class="tcard-section"><div class="tsec-hdr"><span class="tsec-title" style="color:#1B5E20"><i class="ti ti-package"></i>Deliverables</span><span class="tsec-badge" style="background:#E8F5E9;color:#1B5E20">'+delivs.length+' total</span></div>';
+      html+='<div class="ms-counts" style="margin-top:8px">';
+      [{l:"Completed",v:dlDone,c:"#2E7D32",f:"Completed"},{l:"In Progress",v:dlIP,c:"#1565C0",f:"In Progress"},{l:"Not Started",v:dlNS,c:"#9b9fad",f:"Not Started"},{l:"Delayed",v:dlDl,c:"#C62828",f:"Delayed"}].forEach(function(x){
+        html+='<div class="ms-count-btn" onclick="showDeliverables('+dIdx+',\''+x.f+'\')">'
+             +'<div class="ms-count-dot" style="background:'+x.c+'"></div>'
+             +'<span class="ms-count-label">'+x.l+'</span><span class="ms-count-val">'+x.v+'</span></div>';
+      });
+      html+='</div></div>';
     } else {
-      html+='<div style="color:var(--muted);font-size:12px;padding:8px 0;font-style:italic">No deliverables entered yet</div>';
+      html+='<div class="tcard-section" style="display:flex;align-items:center;justify-content:center"><span style="font-size:12px;color:var(--muted);font-style:italic">Deliverables not applicable for this track</span></div>';
     }
     html+='</div>';
-    html+='</div>';
 
-    html+='<div class="card-row card-row-bottom">';
-
-    // Dependencies
-    html+='<div class="sec"><div class="sec-hdr">';
-    var depKey="k"+(_CRi++); _CR[depKey]={type:"dep-all",iname:iname};
-    html+='<span class="sec-title" style="color:var(--dep-color)" id="cv-'+depKey+'"><i class="ti ti-link"></i><span>Dependencies</span></span>';
-    html+='<span class="sec-badge" style="background:#EDE7F6;color:#4A235A">'+depScore+'%</span></div>';
-    html+='<div class="stat-grid"><div class="stat"><span class="stat-lbl">Total</span>'+cv(dT,"dep-all",iname,"")+'</div><div class="stat"><span class="stat-lbl">Resolved</span>'+(dR>0?cv(dR,"dep-all",iname,"g"):nv(dR,"g"))+'</div><div class="stat"><span class="stat-lbl">Blocked</span>'+(dB>0?cv(dB,"dep-blk",iname,"d"):nv(dB,""))+'</div><div class="stat"><span class="stat-lbl">High pending</span>'+(dH>0?cv(dH,"dep-hi",iname,"w"):nv(dH,""))+'</div></div>';
-    html+=hbadge("Dep: "+depH,status,depColor);
-    html+='</div>';
-
+    // METRICS + BUDGET
+    html+='<div class="tcard-body-three">';
     // Metrics
-    html+='<div class="sec"><div class="sec-hdr">';
-    var metKey="k"+(_CRi++); _CR[metKey]={type:"kpi-all",iname:iname};
-    html+='<span class="sec-title" style="color:var(--met-color)" id="cv-'+metKey+'"><i class="ti ti-chart-line"></i><span>Success metrics</span></span>';
-    html+='<span class="sec-badge" style="background:#E3F2FD;color:#1A5276">'+metScore+'%</span></div>';
-    html+='<div class="prog"><div class="prog-row"><span>Actuals entered</span><span>'+mEntPct+'%</span></div><div class="prog-track"><div class="prog-fill" style="width:'+mEntPct+'%;background:'+progColor(mEntPct)+'"></div></div></div>';
-    html+='<div class="stat-grid"><div class="stat"><span class="stat-lbl">KPIs tracked</span>'+cv(mCt,"kpi-all",iname,"")+'</div><div class="stat"><span class="stat-lbl">With actuals</span>'+(mAc>0?cv(mAc,"kpi-all",iname,"g"):nv(mAc,"w"))+'</div><div class="stat"><span class="stat-lbl">Missing</span>'+((mCt-mAc)>0?cv(mCt-mAc,"kpi-miss",iname,"w"):nv(0,"g"))+'</div></div>';
+    html+='<div class="tcard-section" style="grid-column:1/3"><div class="tsec-hdr"><span class="tsec-title" style="color:#1A5276"><i class="ti ti-chart-line"></i>Success Metrics</span><span class="tsec-badge" style="background:#E3F2FD;color:#1A5276">target vs actual</span></div>';
+    if(!metrics.length){
+      html+='<div style="font-size:13px;color:var(--muted);font-style:italic">No metrics defined.</div>';
+    } else {
+      metrics.forEach(function(m){
+        var hasAct=m.actual&&m.actual.trim()!=="";
+        var isRatio=(m.unit||"").toLowerCase()==="ratio";
+        var barPct=0,actColor="#1A5276";
+        if(hasAct&&!isRatio){
+          var tNum=parseFloat((m.target||"").replace(/[^0-9.\-]/g,""));
+          var aNum=parseFloat((m.actual||"").replace(/[^0-9.\-]/g,""));
+          if(!isNaN(tNum)&&!isNaN(aNum)&&tNum>0){barPct=Math.min(100,Math.round(aNum/tNum*100));actColor=aNum>=tNum?"#2E7D32":aNum>=tNum*0.7?"#F9A825":"#C62828";}
+        }
+        html+='<div class="metric-row">'
+             +'<div class="metric-name">'+m.name+(m.unit?' <span style="font-size:11px;color:var(--muted)">('+m.unit+')</span>':'')+'</div>'
+             +'<div style="text-align:right;min-width:120px">'
+             +'<div style="font-size:11px;color:var(--muted)">Target: '+m.target+'</div>'
+             +(hasAct?'<div style="font-size:13px;font-weight:700;font-family:\'DM Mono\',monospace;color:'+actColor+'">'+m.actual+'</div>':'<div class="metric-not-entered">not entered</div>')
+             +'</div>'
+             +((!isRatio&&hasAct)?'<div class="metric-bar"><div class="metric-bar-fill" style="width:'+barPct+'%;background:'+actColor+'"></div></div>':'')
+             +'</div>';
+      });
+    }
     html+='</div>';
-
     // Budget
-    html+='<div class="sec"><div class="sec-hdr">';
-    var budKey="k"+(_CRi++); _CR[budKey]={type:"bud-all",iname:iname};
-    html+='<span class="sec-title" style="color:var(--bud-color)" id="cv-'+budKey+'"><i class="ti ti-currency-dollar"></i><span>Budget</span></span>';
-    html+='<span class="sec-badge" style="background:#E8F5E9;color:#1E5631">'+budScore+'%</span></div>';
-    if(appr>0){html+='<div class="prog"><div class="prog-row"><span>Exposure vs approved</span><span>'+bPct+'%</span></div><div class="prog-track"><div class="prog-fill" style="width:'+Math.min(bPct,100)+'%;background:'+budColor+'"></div></div></div>';}
-    html+='<div class="stat-grid"><div class="stat"><span class="stat-lbl">Approved</span>'+cv(fn(appr),"bud-all",iname,"")+'</div><div class="stat"><span class="stat-lbl">Spent</span>'+(spent>0?cv(fn(spent),"bud-all",iname,""):nv("-",""))+'</div><div class="stat"><span class="stat-lbl">Exposure</span>'+(exp>0?cv(fn(exp),"bud-all",iname,""):nv("-",""))+'</div><div class="stat"><span class="stat-lbl">Variance</span>'+(vp!==0?nv(vp+"%",(Math.abs(vp)>15?"d":Math.abs(vp)>5?"w":"")):nv("-",""))+'</div></div>';
-    html+=hbadge("Cost: "+cH,status,budColor);
+    html+='<div class="tcard-section"><div class="tsec-hdr"><span class="tsec-title" style="color:#1E5631"><i class="ti ti-currency-dollar"></i>Budget</span></div>';
+    if(!budget.length){
+      html+='<div style="font-size:13px;color:var(--muted);font-style:italic">No budget lines entered.</div>';
+    } else {
+      var currencies={};
+      budget.forEach(function(b){var cur=b.currency||"?";if(!currencies[cur])currencies[cur]={approved:0,exposure:0};currencies[cur].approved+=b.approved;currencies[cur].exposure+=(b.exposure||b.spent+b.committed);});
+      Object.keys(currencies).forEach(function(cur){
+        var g=currencies[cur];
+        var vp=g.approved>0?Math.round((g.exposure-g.approved)/g.approved*100):0;
+        var bc=Math.abs(vp)>15?"#C62828":Math.abs(vp)>5?"#F9A825":"#2E7D32";
+        html+='<div class="bud-summary">';
+        html+='<div class="bud-stat"><div class="bud-stat-label">Approved</div><div class="bud-stat-val">'+fmt(g.approved)+'</div><div class="bud-stat-cur">'+cur+'</div></div>';
+        html+='<div class="bud-stat"><div class="bud-stat-label">Exposure</div><div class="bud-stat-val" style="color:'+bc+'">'+fmt(g.exposure)+'</div><div class="bud-stat-cur">'+(g.exposure===0?"nothing committed yet":(vp>0?"+"+vp+"% over":Math.abs(vp)+"% under"))+'</div></div>';
+        html+='</div>';
+      });
+    }
+    html+='</div></div>';
     html+='</div>';
-
-    html+='</div></div></div>';
   });
-
-  document.getElementById("cards").innerHTML=html;
-
-  Object.keys(_CR).forEach(function(key){
-    var el=document.getElementById("cv-"+key);
-    if(el) el.onclick=(function(k){return function(){var e=_CR[k];openPanel(e.type,e.iname);};})(key);
-  });
-  data.forEach(function(d){
-    var iid=d["Initiative"].replace(/[^a-zA-Z0-9]/g,"_");
-    var el=document.getElementById("cv-spark-"+iid);
-    if(el) el.onclick=(function(id){return function(e){e.stopPropagation();_showHistory(id);};})(iid);
-    var el2=document.getElementById("cv-spark2-"+iid);
-    if(el2) el2.onclick=(function(id){return function(){_showHistory(id);};})(iid);
-    var el3=document.getElementById("cv-ring-"+iid);
-    if(el3) el3.onclick=(function(id){return function(){_showScoreBreakdown(id);};})(iid);
-  });
+  html+='</div>';
+  document.getElementById("main").innerHTML=html;
 }
 
-function scrollTo(iid){
-  var el=document.getElementById("card-"+iid);
-  if(el) el.scrollIntoView({behavior:"smooth",block:"start"});
-}
-
-function _showScoreBreakdown(iid){
-  var d=null;
-  for(var i=0;i<D.length;i++){if(D[i]["Initiative"].replace(/[^a-zA-Z0-9]/g,"_")===iid){d=D[i];break;}}
-  if(!d) return;
-  var overall=d["Overall Score"]||0,status=d["Overall Status"]||"",m=sm(status),color=progColor(overall);
-  var dims=[{lbl:"Milestones",key:"MilestoneScore",weight:35,color:"#1565C0",icon:"ti-flag-2"},{lbl:"Deliverables",key:"DeliverableScore",weight:20,color:"#1B5E20",icon:"ti-package"},{lbl:"Budget",key:"BudgetScore",weight:15,color:"#1E5631",icon:"ti-currency-dollar"},{lbl:"Metrics",key:"MetricsScore",weight:15,color:"#1A5276",icon:"ti-chart-line"},{lbl:"Dependencies",key:"DependencyScore",weight:15,color:"#4A235A",icon:"ti-link"}];
-  var body='';
-  var r2=34,circ2=2*Math.PI*r2,dash2=circ2*(overall/100),gap2=circ2-dash2;
-  body+='<div style="display:flex;align-items:center;gap:20px;padding:16px;background:#f7f8fa;border-radius:12px;margin-bottom:20px">';
-  body+='<div style="position:relative;width:80px;height:80px;flex-shrink:0"><svg width="80" height="80" viewBox="0 0 80 80" style="transform:rotate(-90deg)"><circle cx="40" cy="40" r="'+r2+'" fill="none" stroke="#EEF0F2" stroke-width="6"/><circle cx="40" cy="40" r="'+r2+'" fill="none" stroke="'+color+'" stroke-width="6" stroke-dasharray="'+dash2+' '+gap2+'" stroke-linecap="round"/></svg><div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-size:20px;font-weight:700;color:var(--navy);font-family:monospace">'+overall+'%</div></div></div>';
-  body+='<div><div style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px">'+d["Initiative"]+'</div><span class="status-pill '+m.pill+'">'+m.lbl+'</span><div style="font-size:11px;color:var(--muted);margin-top:6px">Weighted score across 5 dimensions</div></div></div>';
-  body+='<div style="font-size:11px;color:var(--muted);background:#f0f4ff;border-radius:8px;padding:8px 12px;margin-bottom:16px">Overall = (MS×35%) + (DEL×20%) + (BUD×15%) + (MET×15%) + (DEP×15%)</div>';
-  dims.forEach(function(dim){
-    var score=d[dim.key]||0,contrib=Math.round(score*dim.weight/100*10)/10;
-    body+='<div style="margin-bottom:14px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px"><div style="display:flex;align-items:center;gap:6px"><i class="ti '+dim.icon+'" style="color:'+dim.color+';font-size:13px"></i><span style="font-size:13px;font-weight:600;color:var(--navy)">'+dim.lbl+'</span><span style="font-size:10px;color:var(--muted);background:#EEF0F2;padding:1px 6px;border-radius:4px">'+dim.weight+'% weight</span></div><div style="text-align:right"><span style="font-size:14px;font-weight:700;color:'+progColor(score)+';font-family:monospace">'+score+'%</span><span style="font-size:10px;color:var(--muted);margin-left:6px">→ '+contrib+' pts</span></div></div><div style="height:8px;background:#EEF0F2;border-radius:99px;overflow:hidden"><div style="height:100%;width:'+score+'%;background:'+progColor(score)+';border-radius:99px"></div></div></div>';
-  });
-  body+='<div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;font-weight:700;color:var(--navy)">Overall score</span><span style="font-size:18px;font-weight:700;color:'+color+';font-family:monospace">'+overall+'%</span></div>';
-  document.getElementById("pan-init").textContent=d["Initiative"];
-  document.getElementById("pan-title").textContent="Score breakdown";
-  document.getElementById("pan-sub").textContent="How your overall score is calculated";
-  document.getElementById("pan-body").innerHTML=body;
-  document.getElementById("pov").classList.add("open");
+function formatIST(str){
+  // str comes from Apps Script toLocaleString - reformat to IST AM/PM
+  try{
+    var d=new Date(str);
+    if(isNaN(d)){
+      // try parsing "16/06/2026, 4:30:00 pm"
+      return str;
+    }
+    return d.toLocaleString("en-IN",{timeZone:"Asia/Kolkata",day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:true})+" IST";
+  }catch(e){return str;}
 }
 
 function loadData(){
   document.getElementById("ts").textContent="Refreshing...";
-  document.getElementById("cards").innerHTML='<div class="loading"><div class="lsp"></div>Loading initiative data...</div>';
-  document.getElementById("ocard").style.display="none";
-  document.getElementById("leadership-pulse").style.display="none";
-  _CR={}; _CRi=0;
-  fetch(DATA_URL)
-    .then(function(r){return r.json();})
-    .then(function(p){render(p);})
-    .catch(function(err){
-      document.getElementById("cards").innerHTML='<div class="loading" style="color:var(--red)">Error loading data: '+err.message+'</div>';
-    });
+  document.getElementById("main").innerHTML='<div class="loading"><div class="spinner"></div>Loading initiative data...</div>';
+  fetch(DATA_URL).then(function(r){return r.json();}).then(function(p){render(p);}).catch(function(err){document.getElementById("main").innerHTML='<div class="loading" style="color:var(--red)">Error: '+err.message+'</div>';});
 }
-
 window.onload=loadData;
 </script>
 </body>
