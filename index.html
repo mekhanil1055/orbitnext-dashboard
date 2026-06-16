@@ -279,23 +279,28 @@ function sparkline(history){
 }
 
 // ── AI WHY (calls Anthropic API) ────────────────────────────
+function scrollToTrack(dIdx){
+  var el=document.getElementById("track-"+dIdx);
+  if(el) el.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
 function showAiWhy(dIdx){
   var d=D[dIdx]; if(!d) return;
   var name=(d["Initiative"]||"").replace(/^I\d+\s*-\s*/,"").trim();
   var score=d["Overall Score"]||0;
   var status=d["Overall Status"]||"";
+  var cfg=sc(status);
 
   document.getElementById("ai-pop-track").textContent=name;
   document.getElementById("ai-pop-title").textContent="Score Analysis — "+score+"/100";
   document.getElementById("ai-pop-sub").textContent=status;
-  document.getElementById("ai-pop-body").innerHTML='<div class="ai-why-loading"><div class="ai-why-spinner"></div>Analysing initiative data...</div>';
-  document.getElementById("ai-overlay").classList.add("open");
 
-  // Build data signals for AI
+  // Build signals
   var ms=d["_milestones"]||[];
   var msDl=ms.filter(function(m){return m.status==="Delayed";});
   var msIP=ms.filter(function(m){return m.status==="In Progress";});
   var msDone=ms.filter(function(m){return m.status==="Completed";});
+  var msNS=ms.filter(function(m){return m.status==="Not Started";});
   var metrics=d["_metrics"]||[];
   var metMissing=metrics.filter(function(m){return !m.actual||m.actual.trim()==="";});
   var metEntered=metrics.filter(function(m){return m.actual&&m.actual.trim()!==""});
@@ -305,78 +310,96 @@ function showAiWhy(dIdx){
   var delivs=d["_deliverables"]||[];
   var delivsDl=delivs.filter(function(dl){return dl.status==="Delayed";});
 
-  var promptData="Initiative: "+name+"\nScore: "+score+"/100\nStatus: "+status+"\n";
-  promptData+="Timeline: "+(d["Timeline"]||"?")+" | Week: "+weekNum()+" of "+TOTAL_WEEKS+"\n\n";
-  promptData+="MILESTONES ("+ms.length+" total):\n";
-  promptData+="- Completed: "+msDone.length+"\n";
-  promptData+="- In Progress: "+msIP.length+"\n";
-  promptData+="- Delayed: "+msDl.length+"\n";
-  if(msDl.length) promptData+="  Delayed items: "+msDl.map(function(m){return m.name+(m.notes?" ["+m.notes+"]":"");}).join("; ")+"\n";
-  if(msIP.length) promptData+="  In Progress: "+msIP.map(function(m){return m.name+(m.notes?" ["+m.notes+"]":"");}).join("; ")+"\n";
-
-  promptData+="\nSUCCESS METRICS ("+metrics.length+" total):\n";
-  metEntered.forEach(function(m){promptData+="- "+m.name+": target="+m.target+", actual="+m.actual+" ("+m.unit+")\n";});
-  if(metMissing.length) promptData+="- "+metMissing.length+" metric"+(metMissing.length>1?"s":"")+" have no actuals yet: "+metMissing.map(function(m){return m.name;}).join(", ")+"\n";
-
-  if(deps.length){
-    promptData+="\nDEPENDENCIES:\n";
-    if(depsBlocked.length) promptData+="- BLOCKED: "+depsBlocked.map(function(d){return d.name+" (provider: "+d.provider+")";}).join("; ")+"\n";
-    if(depsPending.length) promptData+="- High priority pending: "+depsPending.map(function(d){return d.name;}).join("; ")+"\n";
-  }
-
-  if(delivs.length){
-    promptData+="\nDELIVERABLES:\n";
-    if(delivsDl.length) promptData+="- Delayed: "+delivsDl.map(function(dl){return dl.name;}).join("; ")+"\n";
-  }
-
-  promptData+="\nSCORE COMPONENTS:\n";
-  promptData+="- Milestone score: "+d["MilestoneScore"]+"% (70% of base)\n";
-  promptData+="- Metrics score: "+d["MetricsScore"]+"% (30% of base)\n";
-  promptData+="- Base score: "+d["BaseScore"]+"%\n";
-  promptData+="- Deliverable adjustment: "+(d["DeliverableAdj"]||0)+" pts\n";
-  promptData+="- Dependency adjustment: "+(d["DependencyAdj"]||0)+" pts\n";
-  promptData+="- Budget adjustment: "+(d["BudgetAdj"]||0)+" pts\n";
-
+  var msScore=d["MilestoneScore"]||0;
+  var metScore=d["MetricsScore"]||0;
+  var base=d["BaseScore"]||0;
+  var delAdj=d["DeliverableAdj"]||0;
+  var depAdj=d["DependencyAdj"]||0;
+  var budAdj=d["BudgetAdj"]||0;
   var trend=d["Trend"]||"stable";
   var history=d["ScoreHistory"]||[];
+
+  // Auto-generate contextual explanation
+  var reasons=[];
+  if(msDone.length&&ms.length) reasons.push(msDone.length+" of "+ms.length+" milestones completed");
+  if(msDl.length) reasons.push(msDl.map(function(m){return m.name+(m.notes?" ("+m.notes+")":"");}).join(" and ")+(msDl.length>1?" are":" is")+" delayed");
+  if(msIP.length) reasons.push(msIP.map(function(m){return m.name;}).join(" and ")+(msIP.length>1?" are":" is")+" in progress");
+  if(metMissing.length) reasons.push(metMissing.length+" metric"+(metMissing.length>1?"s":"")+" still missing actuals — "+metMissing.map(function(m){return m.name;}).join(", "));
+  if(metEntered.length){
+    var below=metEntered.filter(function(m){
+      var t=parseFloat((m.target||"").replace(/[^0-9.\-]/g,"")),a=parseFloat((m.actual||"").replace(/[^0-9.\-]/g,""));
+      return !isNaN(t)&&!isNaN(a)&&a<t;
+    });
+    if(below.length) reasons.push(below.map(function(m){return m.name+" (actual: "+m.actual+", target: "+m.target+")";}).join("; ")+(below.length>1?" are":" is")+" below target");
+  }
+  if(depsBlocked.length) reasons.push(depsBlocked.map(function(dep){return dep.name+" (blocked, provider: "+dep.provider+")";}).join("; "));
+  if(delivsDl.length) reasons.push(delivsDl.map(function(dl){return dl.name;}).join(", ")+(delivsDl.length>1?" are":" is")+" delayed");
+  if(depAdj===7) reasons.push("all dependencies resolved");
+  if(delAdj===5) reasons.push("deliverables on track");
+  if(budAdj===-3) reasons.push("budget data not yet entered");
+
+  var trendSentence="";
   if(history.length>1){
-    promptData+="\nSCORE HISTORY: "+history.map(function(h){return "Wk"+h.week+":"+h.score;}).join(", ")+"\n";
-    promptData+="Trend: "+trend+"\n";
+    var prev=history[history.length-2].score;
+    var delta=score-prev;
+    if(trend==="up") trendSentence=" Score improved by "+Math.abs(delta)+" points since last week.";
+    else if(trend==="down") trendSentence=" Score dropped by "+Math.abs(delta)+" points since last week — attention needed.";
+    else trendSentence=" Score has held steady over the past week.";
   }
 
-  var systemPrompt="You are a PMO analyst reviewing an OrbitNext 2.0 initiative tracker for InApp, an IT services company targeting 25M to 50M USD revenue growth. Your role is to give a concise, contextual explanation of why an initiative has its current score — written for a CEO and leadership team, not a technical audience. Be direct, specific, and use the actual milestone names and metric names from the data. Do not explain the scoring formula. Do not say things like 'based on the data'. Write 3-4 sentences maximum. Focus on what is actually happening — what is done, what is stuck, what is missing, and what the risk is if nothing changes.";
+  var summary="";
+  if(!reasons.length) summary="No specific blockers flagged at this time. Score of "+score+" reflects current data entered.";
+  else summary=reasons.map(function(r,i){return i===0?r.charAt(0).toUpperCase()+r.slice(1):r;}).join("; ")+"."+trendSentence;
 
-  var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwgkS45kGFl1s-8z-W2nFdO4YQYEE-I3DbM2XbZ5G4sQUsA6uJaxu3X6GNTg5LZJmBvWg/exec";
-
-  var whyUrl = APPS_SCRIPT_URL + "?serve=why&prompt=" + encodeURIComponent(promptData);
-
-  fetch(whyUrl, { redirect: "follow" })
-  .then(function(r){ return r.json(); })
-  .then(function(r){
-    var text = r.text || "Unable to generate analysis.";
-
-    // Build signals list
-    var signals=[];
-    if(msDl.length) msDl.forEach(function(m){signals.push({label:m.name,sub:"Milestone — delayed"+(m.notes?" · "+m.notes:""),color:"#C62828"});});
-    if(depsBlocked.length) depsBlocked.forEach(function(dep){signals.push({label:dep.name,sub:"Dependency blocked · Provider: "+dep.provider,color:"#B71C1C"});});
-    if(delivsDl.length) delivsDl.forEach(function(dl){signals.push({label:dl.name,sub:"Deliverable delayed",color:"#E65100"});});
-    if(metMissing.length) metMissing.forEach(function(m){signals.push({label:m.name,sub:"Metric — no actual entered",color:"#9b9fad"});});
-
-    var html='<div class="ai-why-text">'+escHtml(text)+'</div>';
-    if(signals.length){
-      html+='<div class="ai-why-signals"><div class="ai-why-signal-title">Flagged items</div>';
-      signals.forEach(function(s){
-        html+='<div class="ai-signal-row"><div class="ai-signal-dot" style="background:'+s.color+'"></div>'
-             +'<div><div style="font-size:13px;font-weight:600;color:var(--navy)">'+escHtml(s.label)+'</div>'
-             +'<div style="font-size:12px;color:var(--muted)">'+escHtml(s.sub)+'</div></div></div>';
-      });
-      html+='</div>';
+  // Score breakdown HTML
+  var breakdownHtml='<div style="margin-bottom:16px;padding:14px 16px;background:#f7f8fa;border-radius:10px;border:1px solid var(--border)">';
+  breakdownHtml+='<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Score breakdown</div>';
+  [
+    {label:"Milestones",val:msScore+"%",sub:"70% of base",bar:msScore,color:progColor(msScore)},
+    {label:"Metrics",val:metScore+"%",sub:"30% of base",bar:metScore,color:progColor(metScore)},
+    {label:"Base score",val:base+"%",sub:"milestones + metrics",bar:base,color:progColor(base)},
+    {label:"Deliverables",val:(delAdj>=0?"+":"")+delAdj+" pts",sub:"adjustment",bar:null,color:delAdj>0?"#2E7D32":delAdj<0?"#C62828":"#9b9fad"},
+    {label:"Dependencies",val:(depAdj>=0?"+":"")+depAdj+" pts",sub:"adjustment",bar:null,color:depAdj>0?"#2E7D32":depAdj<0?"#C62828":"#9b9fad"},
+    {label:"Budget",val:(budAdj>=0?"+":"")+budAdj+" pts",sub:"adjustment",bar:null,color:budAdj>0?"#2E7D32":budAdj<0?"#C62828":"#9b9fad"},
+  ].forEach(function(r){
+    breakdownHtml+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">';
+    breakdownHtml+='<div style="min-width:110px;font-size:12px;color:var(--muted)">'+r.label+'</div>';
+    if(r.bar!==null){
+      breakdownHtml+='<div style="flex:1;height:6px;background:#EEF0F2;border-radius:99px;overflow:hidden"><div style="height:100%;width:'+r.bar+'%;background:'+r.color+';border-radius:99px"></div></div>';
+    } else {
+      breakdownHtml+='<div style="flex:1"></div>';
     }
-    document.getElementById("ai-pop-body").innerHTML=html;
-  })
-  .catch(function(err){
-    document.getElementById("ai-pop-body").innerHTML='<div style="color:#C62828;font-size:13px">Could not load analysis: '+err.message+'</div>';
+    breakdownHtml+='<div style="font-size:13px;font-weight:700;font-family:\'DM Mono\',monospace;color:'+r.color+';min-width:60px;text-align:right">'+r.val+'</div>';
+    breakdownHtml+='</div>';
   });
+  // Final score
+  breakdownHtml+='<div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border);margin-top:4px">';
+  breakdownHtml+='<div style="font-size:13px;font-weight:700;color:var(--navy)">Final score</div>';
+  breakdownHtml+='<div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace;color:'+progColor(score)+'">'+score+'%</div>';
+  breakdownHtml+='</div>';
+  breakdownHtml+='</div>';
+
+  // Flagged items
+  var signals=[];
+  if(msDl.length) msDl.forEach(function(m){signals.push({label:m.name,sub:"Milestone delayed"+(m.notes?" · "+m.notes:""),color:"#C62828"});});
+  if(depsBlocked.length) depsBlocked.forEach(function(dep){signals.push({label:dep.name,sub:"Dependency blocked · Provider: "+dep.provider,color:"#B71C1C"});});
+  if(delivsDl.length) delivsDl.forEach(function(dl){signals.push({label:dl.name,sub:"Deliverable delayed",color:"#E65100"});});
+  if(metMissing.length) metMissing.forEach(function(m){signals.push({label:m.name,sub:"Metric — no actual entered",color:"#9b9fad"});});
+
+  var html='<div class="ai-why-text" style="font-size:14px;line-height:1.8;margin-bottom:16px">'+escHtml(summary)+'</div>';
+  html+=breakdownHtml;
+  if(signals.length){
+    html+='<div class="ai-why-signals"><div class="ai-why-signal-title">Flagged items</div>';
+    signals.forEach(function(s){
+      html+='<div class="ai-signal-row"><div class="ai-signal-dot" style="background:'+s.color+'"></div>'
+           +'<div><div style="font-size:13px;font-weight:600;color:var(--navy)">'+escHtml(s.label)+'</div>'
+           +'<div style="font-size:12px;color:var(--muted)">'+escHtml(s.sub)+'</div></div></div>';
+    });
+    html+='</div>';
+  }
+
+  document.getElementById("ai-pop-body").innerHTML=html;
+  document.getElementById("ai-overlay").classList.add("open");
 }
 function closeAiPopup(){document.getElementById("ai-overlay").classList.remove("open");}
 function escHtml(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
@@ -497,14 +520,16 @@ function render(payload){
        +'<span class="sec-hdr-badge" style="color:rgba(255,255,255,.5)">Last '+wk+' week'+(wk!==1?"s":"")+'</span></div>';
   html+='<div class="sec-body"><div class="trend-grid">';
 
-  data.forEach(function(d){
+  data.forEach(function(d, dIdx){
     var history=d["ScoreHistory"]||[];
     var name=(d["Initiative"]||"").replace(/^I\d+\s*-\s*/,"").trim();
     var score=d["Overall Score"]||0;
+    var status=d["Overall Status"]||"Needs Attention";
     var trend=d["Trend"]||"stable";
     var currentColor=progColor(score);
+    var cfg=sc(status);
 
-    html+='<div class="trend-track">';
+    html+='<div class="trend-track" style="cursor:pointer" onclick="scrollToTrack('+dIdx+')" title="Click to go to '+name+'">';
     html+='<div class="trend-track-hdr"><span class="trend-track-name">'+name+'</span>'+trendArrow(trend)+'</div>';
 
     if(!history.length){
@@ -530,9 +555,9 @@ function render(payload){
       });
       html+='</div>';
 
-      // Current score callout
+      // Current score + status
       html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">'
-           +'<span style="font-size:12px;color:var(--muted)">Current score</span>'
+           +'<span class="s-pill" style="font-size:11px;padding:3px 10px;background:'+cfg.bg+';color:'+cfg.text+';border-color:'+cfg.border+'">'+status+'</span>'
            +'<span style="font-size:18px;font-weight:700;font-family:\'DM Mono\',monospace;color:'+currentColor+'">'+score+'%</span>'
            +'</div>';
     }
@@ -642,7 +667,7 @@ function render(payload){
     var metrics=d["_metrics"]||[];
     var budget=d["_budget"]||[];
 
-    html+='<div class="tcard">';
+    html+='<div class="tcard" id="track-'+dIdx+'">';
     html+='<div class="tcard-accent" style="background:'+color+'"></div>';
 
     // TOP
@@ -652,11 +677,13 @@ function render(payload){
          +'<div class="tcard-person-row"><i class="ti ti-user-star"></i><span class="tcard-person-label">Mentors</span>'+mentors+'</div>'
          +'<div class="tcard-person-row"><i class="ti ti-calendar"></i><span class="tcard-person-label">Timeline</span>'+timeline+' · Week '+wk+'</div>'
          +'</div>';
-    html+='<div class="tcard-right">';
+    var iid = "track-"+dIdx;
+    html+='<div class="tcard-right" style="align-items:center;text-align:center">';
     html+=scoreRing(score,color,dIdx);
-    html+='<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">';
-    html+=pillHtml(status);
-    html+='<div style="display:flex;align-items:center;gap:8px">'+trendArrow(trend)+'<span style="font-size:12px;color:var(--muted)">'+weeksAt+' wk'+(weeksAt!==1?"s":"")+'</span></div>';
+    html+='<div onclick="showAiWhy('+dIdx+')" style="cursor:pointer;margin-top:2px">'
+         +'<span class="s-pill" style="font-size:14px;font-weight:800;padding:7px 18px;'+('background:'+sc(status).bg+';color:'+sc(status).text+';border-color:'+sc(status).border)+'">'+status+'</span>'
+         +'</div>';
+    html+='<div style="display:flex;align-items:center;gap:6px;margin-top:4px">'+trendArrow(trend)+'<span style="font-size:12px;color:var(--muted)">'+weeksAt+' wk'+(weeksAt!==1?"s":"")+'</span></div>';
     html+=sparkline(history);
     html+='</div></div></div>';
 
