@@ -281,7 +281,9 @@ function sparkline(history){
 // ── AI WHY (calls Anthropic API) ────────────────────────────
 function scrollToTrack(dIdx){
   var el=document.getElementById("track-"+dIdx);
-  if(el) el.scrollIntoView({behavior:"smooth",block:"start"});
+  if(!el) return;
+  var top=el.getBoundingClientRect().top+window.pageYOffset-80; // 68px header + 12px breathing room
+  window.scrollTo({top:top,behavior:"smooth"});
 }
 
 function showAiWhy(dIdx){
@@ -319,84 +321,49 @@ function showAiWhy(dIdx){
   var trend=d["Trend"]||"stable";
   var history=d["ScoreHistory"]||[];
 
-  // Auto-generate contextual explanation
-  var reasons=[];
-  if(msDone.length&&ms.length) reasons.push(msDone.length+" of "+ms.length+" milestones completed");
-  if(msDl.length) reasons.push(msDl.map(function(m){return m.name+(m.notes?" ("+m.notes+")":"");}).join(" and ")+(msDl.length>1?" are":" is")+" delayed");
-  if(msIP.length) reasons.push(msIP.map(function(m){return m.name;}).join(" and ")+(msIP.length>1?" are":" is")+" in progress");
-  if(metMissing.length) reasons.push(metMissing.length+" metric"+(metMissing.length>1?"s":"")+" still missing actuals — "+metMissing.map(function(m){return m.name;}).join(", "));
-  if(metEntered.length){
-    var below=metEntered.filter(function(m){
-      var t=parseFloat((m.target||"").replace(/[^0-9.\-]/g,"")),a=parseFloat((m.actual||"").replace(/[^0-9.\-]/g,""));
-      return !isNaN(t)&&!isNaN(a)&&a<t;
-    });
-    if(below.length) reasons.push(below.map(function(m){return m.name+" (actual: "+m.actual+", target: "+m.target+")";}).join("; ")+(below.length>1?" are":" is")+" below target");
-  }
-  if(depsBlocked.length) reasons.push(depsBlocked.map(function(dep){return dep.name+" (blocked, provider: "+dep.provider+")";}).join("; "));
-  if(delivsDl.length) reasons.push(delivsDl.map(function(dl){return dl.name;}).join(", ")+(delivsDl.length>1?" are":" is")+" delayed");
-  if(depAdj===7) reasons.push("all dependencies resolved");
-  if(delAdj===5) reasons.push("deliverables on track");
-  if(budAdj===-3) reasons.push("budget data not yet entered");
-
-  var trendSentence="";
+  // Build bullet points
+  var bullets=[];
+  if(ms.length) bullets.push(msDone.length+" of "+ms.length+" milestones completed");
+  msDl.forEach(function(m){ bullets.push(m.name+" is delayed"+(m.notes?" — "+m.notes:"")); });
+  msIP.forEach(function(m){ bullets.push(m.name+" is in progress"+(m.notes?" — "+m.notes:"")); });
+  metEntered.forEach(function(m){
+    var tNum=parseFloat((m.target||"").replace(/[^0-9.\-]/g,"")),aNum=parseFloat((m.actual||"").replace(/[^0-9.\-]/g,""));
+    if(!isNaN(tNum)&&!isNaN(aNum)&&aNum<tNum) bullets.push(m.name+" is at "+m.actual+" against a target of "+m.target);
+  });
+  metMissing.forEach(function(m){ bullets.push(m.name+" — actuals not yet entered"); });
+  depsBlocked.forEach(function(dep){ bullets.push(dep.name+" is blocked (provider: "+dep.provider+")"); });
+  depsPending.forEach(function(dep){ bullets.push(dep.name+" is a high-priority pending dependency"); });
+  if(!depsBlocked.length&&!depsPending.length&&deps.length) bullets.push("All dependencies resolved");
+  delivsDl.forEach(function(dl){ bullets.push(dl.name+" deliverable is delayed"); });
+  if(delAdj===5&&delivs.length) bullets.push("All deliverables on track");
+  if(budAdj===-3) bullets.push("Budget data not yet entered");
+  else if(budAdj<0){ var vp=d["Variance Pct"]||0; bullets.push("Budget exposure is "+Math.abs(vp)+"% over approved"); }
   if(history.length>1){
-    var prev=history[history.length-2].score;
-    var delta=score-prev;
-    if(trend==="up") trendSentence=" Score improved by "+Math.abs(delta)+" points since last week.";
-    else if(trend==="down") trendSentence=" Score dropped by "+Math.abs(delta)+" points since last week — attention needed.";
-    else trendSentence=" Score has held steady over the past week.";
+    var prev=history[history.length-2].score,delta=score-prev;
+    if(trend==="up") bullets.push("Score improved by "+Math.abs(delta)+" points since last week");
+    else if(trend==="down") bullets.push("Score dropped by "+Math.abs(delta)+" points since last week — attention needed");
+    else bullets.push("Score has held steady over the past week");
   }
+  if(!bullets.length) bullets.push("No specific blockers flagged at this time");
 
-  var summary="";
-  if(!reasons.length) summary="No specific blockers flagged at this time. Score of "+score+" reflects current data entered.";
-  else summary=reasons.map(function(r,i){return i===0?r.charAt(0).toUpperCase()+r.slice(1):r;}).join("; ")+"."+trendSentence;
-
-  // Score breakdown HTML
+  // Score breakdown
   var breakdownHtml='<div style="margin-bottom:16px;padding:14px 16px;background:#f7f8fa;border-radius:10px;border:1px solid var(--border)">';
   breakdownHtml+='<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Score breakdown</div>';
-  [
-    {label:"Milestones",val:msScore+"%",sub:"70% of base",bar:msScore,color:progColor(msScore)},
-    {label:"Metrics",val:metScore+"%",sub:"30% of base",bar:metScore,color:progColor(metScore)},
-    {label:"Base score",val:base+"%",sub:"milestones + metrics",bar:base,color:progColor(base)},
-    {label:"Deliverables",val:(delAdj>=0?"+":"")+delAdj+" pts",sub:"adjustment",bar:null,color:delAdj>0?"#2E7D32":delAdj<0?"#C62828":"#9b9fad"},
-    {label:"Dependencies",val:(depAdj>=0?"+":"")+depAdj+" pts",sub:"adjustment",bar:null,color:depAdj>0?"#2E7D32":depAdj<0?"#C62828":"#9b9fad"},
-    {label:"Budget",val:(budAdj>=0?"+":"")+budAdj+" pts",sub:"adjustment",bar:null,color:budAdj>0?"#2E7D32":budAdj<0?"#C62828":"#9b9fad"},
-  ].forEach(function(r){
-    breakdownHtml+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">';
-    breakdownHtml+='<div style="min-width:110px;font-size:12px;color:var(--muted)">'+r.label+'</div>';
-    if(r.bar!==null){
-      breakdownHtml+='<div style="flex:1;height:6px;background:#EEF0F2;border-radius:99px;overflow:hidden"><div style="height:100%;width:'+r.bar+'%;background:'+r.color+';border-radius:99px"></div></div>';
-    } else {
-      breakdownHtml+='<div style="flex:1"></div>';
-    }
-    breakdownHtml+='<div style="font-size:13px;font-weight:700;font-family:\'DM Mono\',monospace;color:'+r.color+';min-width:60px;text-align:right">'+r.val+'</div>';
-    breakdownHtml+='</div>';
+  [{label:"Milestones",val:msScore+"%",bar:msScore,color:progColor(msScore)},{label:"Metrics",val:metScore+"%",bar:metScore,color:progColor(metScore)},{label:"Base score",val:base+"%",bar:base,color:progColor(base)},{label:"Deliverables",val:(delAdj>=0?"+":"")+delAdj+" pts",bar:null,color:delAdj>0?"#2E7D32":delAdj<0?"#C62828":"#9b9fad"},{label:"Dependencies",val:(depAdj>=0?"+":"")+depAdj+" pts",bar:null,color:depAdj>0?"#2E7D32":depAdj<0?"#C62828":"#9b9fad"},{label:"Budget",val:(budAdj>=0?"+":"")+budAdj+" pts",bar:null,color:budAdj>0?"#2E7D32":budAdj<0?"#C62828":"#9b9fad"}].forEach(function(r){
+    breakdownHtml+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="min-width:110px;font-size:12px;color:var(--muted)">'+r.label+'</div>';
+    breakdownHtml+=r.bar!==null?'<div style="flex:1;height:6px;background:#EEF0F2;border-radius:99px;overflow:hidden"><div style="height:100%;width:'+r.bar+'%;background:'+r.color+';border-radius:99px"></div></div>':'<div style="flex:1"></div>';
+    breakdownHtml+='<div style="font-size:13px;font-weight:700;font-family:\'DM Mono\',monospace;color:'+r.color+';min-width:60px;text-align:right">'+r.val+'</div></div>';
   });
-  // Final score
-  breakdownHtml+='<div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border);margin-top:4px">';
-  breakdownHtml+='<div style="font-size:13px;font-weight:700;color:var(--navy)">Final score</div>';
-  breakdownHtml+='<div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace;color:'+progColor(score)+'">'+score+'%</div>';
-  breakdownHtml+='</div>';
-  breakdownHtml+='</div>';
+  breakdownHtml+='<div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border);margin-top:4px"><div style="font-size:13px;font-weight:700;color:var(--navy)">Final score</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace;color:'+progColor(score)+'">'+score+'%</div></div></div>';
 
-  // Flagged items
-  var signals=[];
-  if(msDl.length) msDl.forEach(function(m){signals.push({label:m.name,sub:"Milestone delayed"+(m.notes?" · "+m.notes:""),color:"#C62828"});});
-  if(depsBlocked.length) depsBlocked.forEach(function(dep){signals.push({label:dep.name,sub:"Dependency blocked · Provider: "+dep.provider,color:"#B71C1C"});});
-  if(delivsDl.length) delivsDl.forEach(function(dl){signals.push({label:dl.name,sub:"Deliverable delayed",color:"#E65100"});});
-  if(metMissing.length) metMissing.forEach(function(m){signals.push({label:m.name,sub:"Metric — no actual entered",color:"#9b9fad"});});
-
-  var html='<div class="ai-why-text" style="font-size:14px;line-height:1.8;margin-bottom:16px">'+escHtml(summary)+'</div>';
+  var html='<ul style="list-style:none;padding:0;margin:0 0 16px 0">';
+  bullets.forEach(function(b){
+    html+='<li style="display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid #f3f4f6;font-size:13px;line-height:1.6">'
+         +'<span style="color:var(--red);font-size:10px;margin-top:5px;flex-shrink:0">&#9679;</span>'
+         +'<span>'+escHtml(b)+'</span></li>';
+  });
+  html+='</ul>';
   html+=breakdownHtml;
-  if(signals.length){
-    html+='<div class="ai-why-signals"><div class="ai-why-signal-title">Flagged items</div>';
-    signals.forEach(function(s){
-      html+='<div class="ai-signal-row"><div class="ai-signal-dot" style="background:'+s.color+'"></div>'
-           +'<div><div style="font-size:13px;font-weight:600;color:var(--navy)">'+escHtml(s.label)+'</div>'
-           +'<div style="font-size:12px;color:var(--muted)">'+escHtml(s.sub)+'</div></div></div>';
-    });
-    html+='</div>';
-  }
 
   document.getElementById("ai-pop-body").innerHTML=html;
   document.getElementById("ai-overlay").classList.add("open");
@@ -723,9 +690,37 @@ function render(payload){
     } else {
       metrics.forEach(function(m){
         var hasAct=m.actual&&m.actual.trim()!=="";
-        var isRatio=(m.unit||"").toLowerCase()==="ratio";
+        var unit=(m.unit||"").toLowerCase();
+        var isRatio=unit==="ratio";
+        var isBool=unit==="boolean";
+        var isDate=unit==="date";
         var barPct=0,actColor="#1A5276";
-        if(hasAct&&!isRatio){
+
+        if(isBool){
+          var isDone=hasAct&&["yes","true","1"].indexOf(m.actual.trim().toLowerCase())!==-1;
+          html+='<div class="metric-row">'
+               +'<div class="metric-name">'+m.name+'</div>'
+               +'<div style="text-align:right;min-width:120px">'
+               +'<div style="font-size:11px;color:var(--muted)">Target: '+m.target+'</div>'
+               +'</div>'
+               +(hasAct
+                 ?'<div style="font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;border:1px solid;'+(isDone?"background:#E8F5E9;color:#2E7D32;border-color:#A5D6A7":"background:#FFEBEE;color:#C62828;border-color:#EF9A9A")+'">'+(isDone?"\u2713 Done":"\u2717 Not done")+'</div>'
+                 :'<div class="metric-not-entered">not entered</div>')
+               +'</div>';
+          return;
+        }
+
+        if(isRatio||isDate){
+          html+='<div class="metric-row">'
+               +'<div class="metric-name">'+m.name+(m.unit?' <span style="font-size:11px;color:var(--muted)">('+m.unit+')</span>':'')+'</div>'
+               +'<div style="text-align:right;min-width:120px">'
+               +'<div style="font-size:11px;color:var(--muted)">Target: '+m.target+'</div>'
+               +(hasAct?'<div style="font-size:13px;font-weight:700;font-family:\'DM Mono\',monospace;color:#1A5276">'+m.actual+'</div>':'<div class="metric-not-entered">not entered</div>')
+               +'</div></div>';
+          return;
+        }
+
+        if(hasAct){
           var tNum=parseFloat((m.target||"").replace(/[^0-9.\-]/g,""));
           var aNum=parseFloat((m.actual||"").replace(/[^0-9.\-]/g,""));
           if(!isNaN(tNum)&&!isNaN(aNum)&&tNum>0){barPct=Math.min(100,Math.round(aNum/tNum*100));actColor=aNum>=tNum?"#2E7D32":aNum>=tNum*0.7?"#F9A825":"#C62828";}
@@ -736,7 +731,7 @@ function render(payload){
              +'<div style="font-size:11px;color:var(--muted)">Target: '+m.target+'</div>'
              +(hasAct?'<div style="font-size:13px;font-weight:700;font-family:\'DM Mono\',monospace;color:'+actColor+'">'+m.actual+'</div>':'<div class="metric-not-entered">not entered</div>')
              +'</div>'
-             +((!isRatio&&hasAct)?'<div class="metric-bar"><div class="metric-bar-fill" style="width:'+barPct+'%;background:'+actColor+'"></div></div>':'')
+             +(hasAct?'<div class="metric-bar"><div class="metric-bar-fill" style="width:'+barPct+'%;background:'+actColor+'"></div></div>':'')
              +'</div>';
       });
     }
