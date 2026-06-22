@@ -311,8 +311,8 @@ function showAiWhy(dIdx){
   var msDone=ms.filter(function(m){return m.status==="Completed";});
   var msNS=ms.filter(function(m){return m.status==="Not Started";});
   var metrics=d["_metrics"]||[];
-  var metMissing=metrics.filter(function(m){return !m.actual||m.actual.trim()==="";});
-  var metEntered=metrics.filter(function(m){return m.actual&&m.actual.trim()!==""});
+  var metMissing=metrics.filter(function(m){return m.actual===undefined||m.actual===null||String(m.actual).trim()==="";});
+  var metEntered=metrics.filter(function(m){return m.actual!==undefined&&m.actual!==null&&String(m.actual).trim()!==""});
   var deps=d["_deps"]||[];
   var depsBlocked=deps.filter(function(dep){return dep.status==="Blocked";});
   var depsPending=deps.filter(function(dep){return dep.status==="Pending"&&dep.priority==="High";});
@@ -709,7 +709,7 @@ function render(payload){
       html+='<div style="font-size:13px;color:var(--muted);font-style:italic">No metrics defined.</div>';
     } else {
       metrics.forEach(function(m){
-        var hasAct=m.actual&&m.actual.trim()!=="";
+        var hasAct=m.actual!==undefined&&m.actual!==null&&String(m.actual).trim()!=="";
         var unit=(m.unit||"").toLowerCase();
         var isRatio=unit==="ratio";
         var isBool=unit==="boolean";
